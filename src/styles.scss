@@ -1,1 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
+.wrap-input100 {
+    padding-left: 39px !important;
+}
+.symbol-input100 { 
+    padding-left: 0px !important;
+}
+#login{
+    background-color: silver !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+}
+#password{
+    background-color: silver !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+}
+.login100-form-btn{
+    margin-left: 60px !important;
+}
+span{
+    padding-left: 40px !important;
+    color: red;
+    font-size: 14px !important;
+}
+.login100-form {
+    width: 340px !important;
+}
+button:disabled,
+button[disabled]{
+  opacity: 0.5 !important;
+}
