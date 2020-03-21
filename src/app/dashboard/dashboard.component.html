@@ -1,0 +1,54 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <!-- <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <p class="nav-link"></p>
+        </li>
+      </ul> -->
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item active">
+            <p class="nav-link"><span style="font-size:30px;cursor:pointer;color: black;" (click)="openNav()"> {{displayname}}</span></p>
+          </li>
+          <li class="nav-item">
+            <p class="nav-link">Logout</p>
+          </li>
+          
+       
+        </ul>
+       
+      </div>
+  </nav>
+  <!-- <button class="btn btn-primary" (click)="socket(input)">button</button>
+  <div>{{data}}</div>
+<input #input placeholder="enter"/> -->
+
+<div>Online users</div>
+<div *ngFor="let data of datas">
+  <p>{{data.user}}</p>
+  <input #input placeholder="enter"/>
+  <button  (click)="chat(data.user,input)">send</button>
+</div>
+<div>{{message}}</div>
+<div id="mySidenav" class="sidenav">
+  <p style="cursor: pointer;" class="closebtn" (click)="closeNav()">&times;</p>
+  <p class="link" (click)="ondashboard()">Chat</p>
+  <p class="link">Account</p>
+  <p class="link" href="#">Friends</p>
+  <p class="link" (click)="onusers()">Users</p>
+  <p class="link" href="#">Query</p>
+  <p class="link" (click)="onrequest()">Requests</p>
+
+</div>
+
+
+
+
+
+
+
+

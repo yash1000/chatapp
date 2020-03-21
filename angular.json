@@ -30,7 +30,6 @@
             "styles": [
               "src/styles.scss",
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "src/assets/vendor/bootstrap/css/bootstrap.min.css",
               "src/assets/vendor/animate/animate.css",
               "src/assets/vendor/css-hamburgers/hamburgers.min.css",
               "src/assets/vendor/select2/select2.min.css",
@@ -38,7 +37,7 @@
               "src/assets/css/main.css"
             ],
             "scripts": [
-              "src/assets/vendor/jquery/jquery-3.2.1.min.js",
+              "node_modules/jquery/dist/jquery.min.js",
               "node_modules/bootstrap/dist/js/bootstrap.min.js",
               "src/assets/vendor/bootstrap/js/popper.js",
               "src/assets/vendor/select2/select2.min.js",

@@ -3,19 +3,22 @@ import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { CustomValidators } from '../services/custom-validators';
 import { ApiCalls } from '../services/apicalls.service';
 import { Router } from '@angular/router';
+
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  selector: 'app-registration',
+  templateUrl: './registration.component.html',
+  styleUrls: ['./registration.component.scss']
 })
-export class LoginComponent implements OnInit {
+export class RegistrationComponent implements OnInit {
   profileForm: FormGroup;
   new: any;
+
   constructor(private fb: FormBuilder, private api: ApiCalls, private routes: Router) { }
 
   ngOnInit() {
 
     this.profileForm = this.fb.group({
+      username:['', Validators.required],
       Emailid: ['', [Validators.required, Validators.email]],
       password: [
         null,
@@ -27,43 +30,37 @@ export class LoginComponent implements OnInit {
               hasCapitalCase: true
             }),
             CustomValidators.patternValidator(/[a-z]/, { hasSmallCase: true }),
-            CustomValidators.patternValidator(/[!@#\$%\^&]/, {
+            CustomValidators.patternValidator(/[!@#\$%\^&?]/, {
               haslengthCase: true
             }),
             ,
           ]),
           Validators.minLength(8)
         ]
-      ]
+      ],
+      cpassword: [ null, [Validators.required, Validators.compose([CustomValidators.matchValues('password'),
+      ])]]
     });
   }
   onSubmit(event) {
     console.log(this.profileForm.value);
-    this.api.login(this.profileForm.value).subscribe((res: any) => {
-      if (res.message === 'there is no user like this') {
-        console.log('sorry there is no user like this');
+    this.new = {
+      displayName: this.profileForm.value.username,
+      Emailid: this.profileForm.value.Emailid,
+      password: this.profileForm.value.password
+    };
+    console.log(this.new);
+    this.api.registration(this.new).subscribe((res: any) => {
+      console.log(res.message);
+      if(res.message === 'successfully resgisterd') {
+        this.routes.navigate(['/login']);
       } else {
-      console.log(res);
-
-      localStorage.setItem('accessToken', JSON.stringify(res));
-      this.routes.navigate(['/dashboard']);
+        this.profileForm.reset();
+        this.routes.navigate(['/login']);
       }
-    });
+      });
   }
-  onregistration() {
-    this.routes.navigate(['/registration']);
+  onlogin(){
+    this.routes.navigate(['/login'])
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

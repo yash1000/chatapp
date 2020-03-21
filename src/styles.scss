@@ -15,11 +15,17 @@
     border-radius: 10px !important;
     padding: 12px !important;
 }
+#cpassword{
+    background-color: silver !important;
+    border-radius: 10px !important;
+    padding: 12px !important;
+}
 .login100-form-btn{
     margin-left: 60px !important;
 }
 span{
-    padding-left: 40px !important;
+    padding-left: 12px !important;
+    padding-right: 14px;
     color: red;
     font-size: 14px !important;
 }
@@ -29,4 +35,14 @@ span{
 button:disabled,
 button[disabled]{
   opacity: 0.5 !important;
+}
+.navbar{
+    background: #9053c7;
+    background: linear-gradient(-135deg, #c850c0, #4158d0);
+}
+.login100-pic img {
+    margin-top: 70px;
+}
+.wrap-login100 {
+    padding: 150px 90px 10px 60px !important;
 }
