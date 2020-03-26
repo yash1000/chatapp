@@ -7,16 +7,7 @@ const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
-var config = {
-  apiKey: "AIzaSyDjCZoHVr6BMiQMS-uO9U5fN6gcp0mPWqM",
-  authDomain: "chatpp-da297.firebaseapp.com",
-  databaseURL: "https://chatpp-da297.firebaseio.com",
-  projectId: "chatpp-da297",
-  storageBucket: "chatpp-da297.appspot.com",
-  messagingSenderId: "956935763818",
-  appId: "1:956935763818:web:ae9d71ac0e67ebb3ab9713",
-  measurementId: "G-KKVNKKNV10"
-};
+
 firebas.initializeApp(config);
 app.use(bodyparser.json());
 const cors = require('cors');
