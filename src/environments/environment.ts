@@ -30,5 +30,8 @@ export const appinfo = {
     login: 'login',
     registration: 'registration',
     allusers: 'allusers',
+    sendrequest: 'sendrequest',
+    getrequests: 'getrequests',
+    getrequestlist: 'getrequestlist',
   }
 };

@@ -10,6 +10,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { RegistrationComponent } from './registration/registration.component';
 import { AuthGuard } from './services/authService.service';
 // import { NgHttpLoaderModule } from 'ng-http-loader'; 
+// import { NgHttpLoaderModule } from 'ng-http-loader';
+import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { SecurePage } from './services/protected.service';
 import { ChatComponent } from './chat/chat.component';
 import { UsersComponent } from './users/users.component';
@@ -27,6 +29,8 @@ import { RequestComponent } from './request/request.component';
   imports: [
     BrowserModule,
     ReactiveFormsModule,
+    NgxUiLoaderModule,
+    // NgHttpLoaderModule.forRoot(),
     // NgHttpLoaderModule.forRoot(),
     AppRoutingModule,
     HttpClientModule,

@@ -64,18 +64,18 @@ io.on('connection', function (socket) {
     console.log("----------------------")
     console.log(arrayforconnected)
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-    if(getFruit !== -1){
-    var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-    // console.log("--------------")
-    console.log(getname);
-    io.sockets.connected[getname.socketid].emit("hello",data.message);
-    }else{
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+      // console.log("--------------")
+      console.log(getname);
+      io.sockets.connected[getname.socketid].emit("hello", data.message);
+    } else {
       console.log("user is offline")
     }
   })
 
 
-  
+
   // socket.on('my other event', function (data) {
   //   console.log(data);
   //   console.log(data)
@@ -85,7 +85,106 @@ io.on('connection', function (socket) {
   //     });
   //   }
   // });
+  // var sockets = io
+  // .of('/request');
+  // sockets.on('connection', function (socket) {
+  //   // console.log("connected")
+  socket.on('request', function (data) {
+    console.log(data);
 
+
+
+
+    const button = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
+    if (button !== -1) {
+      var newname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
+      console.log("--------------")
+      console.log(newname);
+      var newdata = "success"
+      io.sockets.connected[newname.socketid].emit("buttondisable", newdata);
+    } else {
+      console.log("user is offline");
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    console.log(arrayforconnected)
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+      // console.log("--------------")
+      console.log(getname);
+      console.log("--------------------")
+      // io.sockets.connected[getname.socketid].emit("accept message",data.message);
+
+      // db.collection("users").where("to", "==", req.body.to)
+      // console.log(getname.from)
+        const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+        db.collection("users")
+          .doc(data.from)
+          .update({
+            "sendRequest": arrayUnion(data.to)
+          });
+        db.collection("users")
+          .doc(data.to)
+          .update({
+            "reciveRequest": arrayUnion(data.from)
+          });
+
+
+console.log(data.from)
+        db.collection('users').doc(data.from).get().then(datas => {
+          console.log(datas.data());
+          const newarray = {
+            id:data.from,
+            name: datas.data().displayName,
+            email: datas.data().Emailid
+          }
+          console.log(newarray)
+          io.sockets.connected[getname.socketid].emit("accept message", newarray);
+        })
+
+    } else {
+      console.log("user is offline")      
+      const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+      db.collection("users")
+      .doc(data.from)
+      .update({
+        "sendRequest": arrayUnion(data.to)
+      });
+    db.collection("users")
+      .doc(data.to)
+      .update({
+        "reciveRequest": arrayUnion(data.from)
+      });
+
+    }
+    //     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+    //     if(getFruit !== -1){
+    //     var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+    //     // console.log("--------------")
+    //     console.log(getname.socketid);
+    //     io.sockets.connected[getname.socketid].emit("friend request",data.message);
+    //     }else{
+    //       console.log("user is offline")
+    //     }
+
+
+
+
+
+  })
+  // });
 });
 
 // var chat = io
@@ -106,11 +205,130 @@ io.on('connection', function (socket) {
 // io.on('createdmessage',()=>{
 //   console.log("ll")
 // })
-// var news = io
-//   .of('/news')
-//   .on('connection', function (socket) {
-//     socket.emit('item', { news: 'item' });
-//   });
+
+app.post('/sendrequest', (req, res) => {
+  console.log(req.body);
+
+  // db.collection("friendrequest").where("to", "==", req.body.to)
+  // .get()
+  // .then(function (querySnapshot) {
+  //   // console.log(querySnapshot.docs);
+
+  //   querySnapshot.forEach(data=>{
+  //     if(data.exists){
+  //     console.log(data.data())
+  //   }else{
+  //     console.log("aaaa")
+  //   }
+  //   })
+  // }).catch(err => {
+  //   console.log(err)
+  // })
+
+  // var requests1=[];
+  // db.collection('friendrequest').get().then((data) => {
+
+  // data.forEach((data=>{
+  //   console.log(data.data())
+  //   // requests1.push(data.data())
+  // // console.log("llllllllllllll")
+  // // console.log(requests1)
+  //   // for(i=0;i<=requests1.length;i++){
+  //   //   if(requests1.to==req.body.to && requests1.from==req.body.from){
+  //   //     console.log("yes")
+  //   //     }else{
+  //   //       console.log("no")
+  //   //     }
+  //   // }
+
+  //   // if(data.data().to==req.body.to && data.data().from==req.body.from){
+  //   //   console.log("yes")
+  //   // }else{
+  //   //   console.log("no")
+  //   //   db.collection('friendrequest').add(req.body).then(() => {});
+  //   // }
+  // }))
+  // });
+
+
+
+
+})
+
+app.post('/getrequests', (req, res) => {
+  console.log(req.body.id)
+  var response = [];
+  db.collection("users").doc(req.body.id).get().then(data => {
+    console.log(data.data().reciveRequest);
+    const recivedrequest = data.data().reciveRequest
+
+    for (let i = 0; i < recivedrequest.length; i++) {
+      console.log(recivedrequest[i]);
+      db.collection("users").doc(recivedrequest[i]).get().then(data => {
+        var newobj = {
+          id:recivedrequest[i],
+          name: data.data().displayName,
+          email: data.data().Emailid,
+        }
+        // console.log(newobj)
+        // console.log(data)
+        response.push(newobj);
+        // console.log(response)
+        if (i == recivedrequest.length - 1) {
+          // res.json(response)
+          console.log(response)
+          res.send(response)
+        }
+        // res.json(newobj)
+        // console.log(response)
+      });
+
+      // console.log(response)
+    }
+    // console.log("-----------")
+    // console.log(response)
+  });
+  //   db.collection('friendrequest').get().then((data) => {
+  //     // console.log(data.docs.);
+  //     console.log(data.docs)
+  //     // var a=  data.docs.find(d=>d={to:req.body.id});
+  //     // var b = data.docs.find(d => d = {from:req.body.id});
+  //     // var c =b.data();
+  //     // console.log(c);
+  //     // console.log(a)
+  //     data.forEach((data=>{
+  //       console.log(data.data())
+  //       if(data.data().to==req.body.id){
+  //         console.log("yes")
+  //         requests1.push(data.data());
+  //       }
+  //       else{
+  //         console.log("no")
+  //       }
+  //     }))
+  //     res.json(requests1);
+  //     // .then(function (querySnapshot) {
+  //     //   //  var a=  querySnapshot.docs.map(d=>d={Emailid:req.body.Emailid});
+  //     //   //  console.log("in")
+  //     //   var b = querySnapshot.docs.find(d => d = {
+  //     //     Emailid: req.body.Emailid
+  //     //   });
+  //     //   var c = b.data()
+  //     //   console.log(c.displayName)
+
+
+
+
+
+
+
+
+
+
+
+  //   })
+  //   // db.collection("users").where("Emailid", "==", req.body.Emailid)
+})
 
 
 app.post('/login', (req, res) => {
@@ -138,17 +356,18 @@ app.post('/login', (req, res) => {
           });
           var c = b.data()
           console.log(c.displayName)
-          querySnapshot.forEach((data=>{
+           console.log(c)
+          querySnapshot.forEach((data => {
             console.log(data.id)
-            const newid=data.id;
+            const newid = data.id;
             totalresponse = {
               uid: newid,
               token: token,
-              displayName: c.displayName
+              displayName: c.displayName,
             }
           }))
-          
-       
+
+
           res.json(totalresponse)
           console.log(result.user.providerData)
         });
@@ -191,18 +410,33 @@ app.post('/registration', (req, res) => {
 
 app.get('/allusers', (req, res) => {
   db.collection('users').get().then(data => {
-      let screms = [];
-      data.forEach(doc => {
-          screms.push({
-              id: doc.id,
-              displayName: doc.data().displayName,
-              Emailid: doc.data().Emailid,
-          });
+    let screms = [];
+    data.forEach(doc => {
+      screms.push({
+        id: doc.id,
+        displayName: doc.data().displayName,
+        Emailid: doc.data().Emailid,
       });
-      res.send(screms);
+    });
+    res.send(screms);
   }).catch(err => console.log(err))
 })
 
-
+app.post('/getrequestlist', (req, res) => {
+  console.log(req.body.uid);
+  db.collection('users').doc(req.body.uid).get().then(data => {
+  //   let screms = [];
+  console.log(data.data());
+  res.json(data.data().sendRequest);
+  //   data.forEach(doc => {
+  //     screms.push({
+  //       id: doc.id,
+  //       displayName: doc.data().displayName,
+  //       Emailid: doc.data().Emailid,
+  //     });
+  //   });
+  //   res.send(screms);
+  }).catch(err => console.log(err))
+})
 
 http.listen(8000, () => console.log('serverstarte on : 8000'));

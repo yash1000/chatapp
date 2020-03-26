@@ -13,7 +13,7 @@ export class DashboardComponent implements OnInit {
   datas = [];
   displayname: any;
   uid: any;
-  message: any;
+  message = [];
 
   constructor(private router: Router) {}
 
@@ -31,8 +31,14 @@ export class DashboardComponent implements OnInit {
     });
     socket.on('hello', data => {
       console.log(data);
-      this.message = data;
+      this.message.push(data);
+      // this.message = data;
     });
+    socket.on('accept message', data => {
+      console.log(data);
+      this.datas = data;
+    });
+
   }
   openNav() {
     document.getElementById('mySidenav').style.width = '250px';
@@ -86,7 +92,7 @@ export class DashboardComponent implements OnInit {
       message: input.value
     });
   }
-  onrequest(){
+  onrequest() {
     this.router.navigate(['/request']);
   }
 }

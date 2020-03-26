@@ -33,7 +33,9 @@
   <input #input placeholder="enter"/>
   <button  (click)="chat(data.user,input)">send</button>
 </div>
-<div>{{message}}</div>
+<div *ngFor="let m of message">
+<div>{{m}}</div>
+</div>
 <div id="mySidenav" class="sidenav">
   <p style="cursor: pointer;" class="closebtn" (click)="closeNav()">&times;</p>
   <p class="link" (click)="ondashboard()">Chat</p>

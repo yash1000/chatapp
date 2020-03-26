@@ -29,6 +29,7 @@
     "ng-http-loader": "^7.0.0",
     "ngx-bootstrap": "^5.5.0",
     "ngx-bootstrap-navbar": "0.0.5",
+    "ngx-ui-loader": "^9.1.1",
     "popper.js": "^1.16.1",
     "rxjs": "~6.4.0",
     "save": "^2.4.0",

@@ -15,4 +15,14 @@ export class ApiCalls {
   getallusers() {
     return this.https.get(this.baseurl + appinfo.info.allusers);
   }
+  sendrequest(object) {
+    return this.https.post(this.baseurl + appinfo.info.sendrequest, object);
+  }
+  getrequests(id) {
+    return this.https.post(this.baseurl + appinfo.info.getrequests, id);
+  }
+  getrequestlist(id) {
+    console.log(id);
+    return this.https.post(this.baseurl + appinfo.info.getrequestlist, id);
+  }
 }
