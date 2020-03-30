@@ -95,4 +95,7 @@ export class DashboardComponent implements OnInit {
   onrequest() {
     this.router.navigate(['/request']);
   }
+  friends() {
+    this.router.navigate(['/friends']);
+  }
 }

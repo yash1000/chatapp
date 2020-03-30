@@ -16,6 +16,7 @@ import { SecurePage } from './services/protected.service';
 import { ChatComponent } from './chat/chat.component';
 import { UsersComponent } from './users/users.component';
 import { RequestComponent } from './request/request.component';
+import { FriendsComponent } from './friends/friends.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -25,6 +26,7 @@ import { RequestComponent } from './request/request.component';
     ChatComponent,
     UsersComponent,
     RequestComponent,
+    FriendsComponent,
   ],
   imports: [
     BrowserModule,

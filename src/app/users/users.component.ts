@@ -33,7 +33,7 @@ export class UsersComponent implements OnInit {
      }, 100);
       }
    });
-    this.api.getallusers().subscribe((data: any) => {
+    this.api.getallusers(this.uid).subscribe((data: any) => {
       console.log(data);
       const getname = data.findIndex(data => data.id === local.uid);
       data.splice(getname, 1);

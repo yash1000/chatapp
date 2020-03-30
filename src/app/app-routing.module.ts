@@ -8,6 +8,7 @@ import { AuthGuard } from './services/authService.service';
 import { ChatComponent } from './chat/chat.component';
 import { UsersComponent } from './users/users.component';
 import { RequestComponent } from './request/request.component';
+import { FriendsComponent } from './friends/friends.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -17,6 +18,7 @@ const routes: Routes = [
   {path: 'chat', canActivate: [SecurePage], component: ChatComponent},
   {path: 'users', canActivate: [SecurePage], component: UsersComponent},
   {path: 'request', canActivate: [SecurePage], component: RequestComponent},
+  {path: 'friends', canActivate: [SecurePage], component: FriendsComponent},
 ];
 
 @NgModule({

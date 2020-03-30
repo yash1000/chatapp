@@ -33,5 +33,8 @@ export const appinfo = {
     sendrequest: 'sendrequest',
     getrequests: 'getrequests',
     getrequestlist: 'getrequestlist',
+    acceptrequest: 'acceptrequest',
+    getfriends: 'getfriends',
+    reject: 'reject',
   }
 };

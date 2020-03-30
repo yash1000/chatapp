@@ -7,7 +7,16 @@ const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
-
+var config = {
+  apiKey: "AIzaSyDjCZoHVr6BMiQMS-uO9U5fN6gcp0mPWqM",
+  authDomain: "chatpp-da297.firebaseapp.com",
+  databaseURL: "https://chatpp-da297.firebaseio.com",
+  projectId: "chatpp-da297",
+  storageBucket: "chatpp-da297.appspot.com",
+  messagingSenderId: "956935763818",
+  appId: "1:956935763818:web:ae9d71ac0e67ebb3ab9713",
+  measurementId: "G-KKVNKKNV10"
+};
 firebas.initializeApp(config);
 app.use(bodyparser.json());
 const cors = require('cors');
@@ -143,7 +152,7 @@ console.log(data.from)
           }
           console.log(newarray)
           io.sockets.connected[getname.socketid].emit("accept message", newarray);
-        })
+        }).catch(err => {console.log(err)});
 
     } else {
       console.log("user is offline")      
@@ -176,6 +185,54 @@ console.log(data.from)
 
   })
   // });
+
+socket.on('acceptrequest', function (data) {
+  console.log(data);
+// app.post('/acceptrequest',(req,res) => {
+  console.log(data);
+  const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  db.collection("users")
+  .doc(data.to)
+  .update({
+    "reciveRequest": arrayRemove(data.from),
+    "friendList":arrayUnion(data.from)
+  }).catch(err => {console.log(err)});
+  db.collection("users")
+  .doc(data.from)
+  .update({
+    "sendRequest": arrayRemove(data.to),
+    "friendList":arrayUnion(data.to)
+  }).catch(err => {console.log(err)});
+  db.collection('users').doc(data.to).get().then(datas => {
+    console.log(datas.data())
+    console.log(datas.id)
+  }).catch(err => {console.log(err);console.log("errrorr in 276")})
+  db.collection('users').doc(data.from).get().then(datas => {
+    console.log(datas.data())
+    console.log(datas.id)
+  }).catch(err => {console.log(err);console.log("errrorr in 276")})
+
+// })
+db.collection('users').doc(data.from).get().then(datass => {
+  // // console.log(data.data())
+  const newdata = {
+    uid:datass.id,
+    name:datass.data().displayName,
+    email:datass.data().Emailid
+  }
+  console.log(data.from)
+  const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
+  if (getFruit !== -1) {
+    var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
+    io.sockets.connected[getname.socketid].emit("newfriend", newdata);
+  }
+  
+  })
+  
+
+
+})
 });
 
 // var chat = io
@@ -196,6 +253,24 @@ console.log(data.from)
 // io.on('createdmessage',()=>{
 //   console.log("ll")
 // })
+
+app.post('/reject', (req, res) => {
+console.log(req.body)
+
+const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  db.collection("users")
+  .doc(req.body.to)
+  .update({
+    "reciveRequest": arrayRemove(req.body.from),
+  }).catch(err => {console.log(err)});
+  db.collection("users")
+  .doc(req.body.from)
+  .update({
+    "sendRequest": arrayRemove(req.body.to),
+  }).catch(err => {console.log(err)});
+})
+
+
 
 app.post('/sendrequest', (req, res) => {
   console.log(req.body);
@@ -240,21 +315,39 @@ app.post('/sendrequest', (req, res) => {
   //   // }
   // }))
   // });
-
-
-
-
 })
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 app.post('/getrequests', (req, res) => {
   console.log(req.body.id)
   var response = [];
   db.collection("users").doc(req.body.id).get().then(data => {
     console.log(data.data().reciveRequest);
+
+
+
+
+
+
+
+    
     const recivedrequest = data.data().reciveRequest
+    const recivedrequestlength = data.data().reciveRequest.length
 
     for (let i = 0; i < recivedrequest.length; i++) {
-      console.log(recivedrequest[i]);
+      // console.log(recivedrequest[i]);
       db.collection("users").doc(recivedrequest[i]).get().then(data => {
         var newobj = {
           id:recivedrequest[i],
@@ -265,7 +358,7 @@ app.post('/getrequests', (req, res) => {
         // console.log(data)
         response.push(newobj);
         // console.log(response)
-        if (i == recivedrequest.length - 1) {
+        if (response.length==recivedrequestlength) {
           // res.json(response)
           console.log(response)
           res.send(response)
@@ -278,7 +371,7 @@ app.post('/getrequests', (req, res) => {
     }
     // console.log("-----------")
     // console.log(response)
-  });
+  }).catch(err => {console.log(err)});
   //   db.collection('friendrequest').get().then((data) => {
   //     // console.log(data.docs.);
   //     console.log(data.docs)
@@ -306,17 +399,6 @@ app.post('/getrequests', (req, res) => {
   //     //   });
   //     //   var c = b.data()
   //     //   console.log(c.displayName)
-
-
-
-
-
-
-
-
-
-
-
   //   })
   //   // db.collection("users").where("Emailid", "==", req.body.Emailid)
 })
@@ -361,7 +443,7 @@ app.post('/login', (req, res) => {
 
           res.json(totalresponse)
           console.log(result.user.providerData)
-        });
+        }).catch(err => {console.log(err)});
     })
   }).catch(err => {
     if (err.message == "There is no user record corresponding to this identifier. The user may have been deleted.") {
@@ -399,19 +481,85 @@ app.post('/registration', (req, res) => {
   })
 })
 
-app.get('/allusers', (req, res) => {
-  db.collection('users').get().then(data => {
-    let screms = [];
-    data.forEach(doc => {
-      screms.push({
-        id: doc.id,
-        displayName: doc.data().displayName,
-        Emailid: doc.data().Emailid,
-      });
-    });
-    res.send(screms);
+// app.post('/allusers', (req, res) => {
+//   db.collection('users').get().then(data => {
+//     let screms = [];
+//     data.forEach(doc => {
+//       screms.push({
+//         id: doc.id,
+//         displayName: doc.data().displayName,
+//         Emailid: doc.data().Emailid,
+//       });
+//     });
+//     res.send(screms);
+//   }).catch(err => console.log(err))
+// })
+
+
+app.post('/allusers', (req, res) => {
+  console.log(req.body)
+  db.collection('users').doc(req.body.uid).get().then(datas => {
+    console.log(datas.data().friendList);
+    var a = datas.data().friendList.length;
+  console.log(a);
+  console.log("length")
+    db.collection('users').get().then(data => {
+      let screms = [];
+              
+          if(a===0){
+            // console.log("oh yeh")
+            data.forEach(doc => {
+              screms.push({
+                id: doc.id,
+                displayName: doc.data().displayName,
+                Emailid: doc.data().Emailid,
+              });
+            })
+            }
+            else{
+      for(let i=0;i<a;i++){
+        // console.log(data.data().friendList[i]);
+
+            data.forEach(doc => {
+          if(datas.data().friendList[i]===doc.id){
+            return false;
+          }
+      
+        else{
+          screms.push({
+            id: doc.id,
+            displayName: doc.data().displayName,
+            Emailid: doc.data().Emailid,
+          });
+          
+        }
+      })
+      }
+  
+        
+      
+      }
+
+      res.send(screms);
+      console.log("on")
+      console.log(screms)
+
+
+
+      // data.forEach(doc => {
+      //   screms.push({
+      //     id: doc.id,
+      //     displayName: doc.data().displayName,
+      //     Emailid: doc.data().Emailid,
+      //   });
+      // });
+      
+      
+    }).catch(err => console.log(err))
   }).catch(err => console.log(err))
 })
+
+
 
 app.post('/getrequestlist', (req, res) => {
   console.log(req.body.uid);
@@ -429,5 +577,43 @@ app.post('/getrequestlist', (req, res) => {
   //   res.send(screms);
   }).catch(err => console.log(err))
 })
+
+
+var arrayoffriend = [];
+app.post('/getfriends', (req, res) => {
+console.log(req.body);
+db.collection('users').doc(req.body.id).get().then(data => {
+  console.log(data.data().friendList.length);
+  var newcount = data.data().friendList.length;
+  for (let i = 0; i <newcount; i++) {
+  db.collection('users').doc(data.data().friendList[i]).get().then(data => {
+  // // console.log(data.data())
+  const newdata = {
+    uid:data.id,
+    name:data.data().displayName,
+    email:data.data().Emailid
+  }
+  arrayoffriend.push(newdata);
+// console.log(arrayoffriend)
+  if (arrayoffriend.length == newcount) {
+    console.log(arrayoffriend);
+    res.send(arrayoffriend);
+  }
+  })
+  
+}
+arrayoffriend =[];
+}).catch(err => {console.log(err)})
+});
+
+
+
+
+
+
+
+
+
+
 
 http.listen(8000, () => console.log('serverstarte on : 8000'));

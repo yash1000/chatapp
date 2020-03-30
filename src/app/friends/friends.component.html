@@ -1,0 +1,15 @@
+
+<table>
+    <tr *ngIf="datas.length!==0 else norequest">
+    <th>name</th>
+    <th>emailid</th>
+
+</tr>
+<tr *ngFor="let data of datas">
+<td>{{data.name}}</td>
+<td>{{data.email}}</td>
+</tr>
+</table>
+<ng-template  #norequest>
+    <h1>No Friends</h1>
+</ng-template>

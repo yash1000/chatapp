@@ -10,7 +10,7 @@
 <td>{{data.name}}</td>
 <td>{{data.email}}</td>
 <td><button class="btn btn-success" (click)="acceptfriendrequest(data.id)">accept</button></td>
-<td><button class="btn btn-danger">Reject</button></td>
+<td><button class="btn btn-danger" (click)="rejectrequest(data.id)">Reject</button></td>
 </tr>
 </table>
 <ng-template  #norequest>

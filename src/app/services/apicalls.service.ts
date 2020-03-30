@@ -12,8 +12,8 @@ export class ApiCalls {
   registration(emp: any) {
     return this.https.post(this.baseurl + appinfo.info.registration, emp);
   }
-  getallusers() {
-    return this.https.get(this.baseurl + appinfo.info.allusers);
+  getallusers(id) {
+    return this.https.post(this.baseurl + appinfo.info.allusers, id);
   }
   sendrequest(object) {
     return this.https.post(this.baseurl + appinfo.info.sendrequest, object);
@@ -24,5 +24,14 @@ export class ApiCalls {
   getrequestlist(id) {
     console.log(id);
     return this.https.post(this.baseurl + appinfo.info.getrequestlist, id);
+  }
+  acceptrequest(id) {
+    return this.https.post(this.baseurl + appinfo.info.acceptrequest, id);
+  }
+  getfriends(id) {
+    return this.https.post(this.baseurl + appinfo.info.getfriends, id);
+  }
+  reject(id) {
+    return this.https.post(this.baseurl + appinfo.info.reject, id);
   }
 }
