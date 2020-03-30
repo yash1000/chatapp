@@ -29,14 +29,8 @@ app.use(bodyparser.urlencoded({
   extended: true
 }))
 
-// io.on('connection', function (socket) {
-//   console.log('user connected');
-//   // socket.emit('test','some data');
-//   console.log(socket)
-// });
 var arrayforconnected = [];
 io.on('connection', function (socket) {
-
 
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
@@ -66,7 +60,6 @@ io.on('connection', function (socket) {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-      // console.log("--------------")
       console.log(getname);
       io.sockets.connected[getname.socketid].emit("hello", data.message);
     } else {
@@ -74,27 +67,8 @@ io.on('connection', function (socket) {
     }
   })
 
-
-
-  // socket.on('my other event', function (data) {
-  //   console.log(data);
-  //   console.log(data)
-  //   if (!data.my == '') {
-  //     socket.emit('first', {
-  //       server: 'hello'
-  //     });
-  //   }
-  // });
-  // var sockets = io
-  // .of('/request');
-  // sockets.on('connection', function (socket) {
-  //   // console.log("connected")
   socket.on('request', function (data) {
     console.log(data);
-
-
-
-
     const button = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
     if (button !== -1) {
       var newname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
@@ -105,229 +79,112 @@ io.on('connection', function (socket) {
     } else {
       console.log("user is offline");
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
     console.log(arrayforconnected)
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-      // console.log("--------------")
       console.log(getname);
-      console.log("--------------------")
-      // io.sockets.connected[getname.socketid].emit("accept message",data.message);
-
-      // db.collection("users").where("to", "==", req.body.to)
-      // console.log(getname.from)
-        const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
-        db.collection("users")
-          .doc(data.from)
-          .update({
-            "sendRequest": arrayUnion(data.to)
-          });
-        db.collection("users")
-          .doc(data.to)
-          .update({
-            "reciveRequest": arrayUnion(data.from)
-          });
-
-
-console.log(data.from)
-        db.collection('users').doc(data.from).get().then(datas => {
-          console.log(datas.data());
-          const newarray = {
-            id:data.from,
-            name: datas.data().displayName,
-            email: datas.data().Emailid
-          }
-          console.log(newarray)
-          io.sockets.connected[getname.socketid].emit("accept message", newarray);
-        }).catch(err => {console.log(err)});
-
-    } else {
-      console.log("user is offline")      
       const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
       db.collection("users")
-      .doc(data.from)
-      .update({
-        "sendRequest": arrayUnion(data.to)
+        .doc(data.from)
+        .update({
+          "sendRequest": arrayUnion(data.to)
+        });
+      db.collection("users")
+        .doc(data.to)
+        .update({
+          "reciveRequest": arrayUnion(data.from)
+        });
+      console.log(data.from)
+      db.collection('users').doc(data.from).get().then(datas => {
+        console.log(datas.data());
+        const newarray = {
+          id: data.from,
+          name: datas.data().displayName,
+          email: datas.data().Emailid
+        }
+        console.log(newarray)
+        io.sockets.connected[getname.socketid].emit("accept message", newarray);
+      }).catch(err => {
+        console.log(err)
       });
+
+    } else {
+      console.log("user is offline")
+      const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+      db.collection("users")
+        .doc(data.from)
+        .update({
+          "sendRequest": arrayUnion(data.to)
+        });
+      db.collection("users")
+        .doc(data.to)
+        .update({
+          "reciveRequest": arrayUnion(data.from)
+        });
+    }
+  })
+
+  socket.on('acceptrequest', function (data) {
+    console.log(data);
+    console.log(data);
+    const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+    const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
     db.collection("users")
       .doc(data.to)
       .update({
-        "reciveRequest": arrayUnion(data.from)
+        "reciveRequest": arrayRemove(data.from),
+        "friendList": arrayUnion(data.from)
+      }).catch(err => {
+        console.log(err)
       });
-
-    }
-    //     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-    //     if(getFruit !== -1){
-    //     var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-    //     // console.log("--------------")
-    //     console.log(getname.socketid);
-    //     io.sockets.connected[getname.socketid].emit("friend request",data.message);
-    //     }else{
-    //       console.log("user is offline")
-    //     }
-
-
-
-
-
+    db.collection("users")
+      .doc(data.from)
+      .update({
+        "sendRequest": arrayRemove(data.to),
+        "friendList": arrayUnion(data.to)
+      }).catch(err => {
+        console.log(err)
+      });
+    db.collection('users').doc(data.from).get().then(datass => {
+      const newdata = {
+        uid: datass.id,
+        name: datass.data().displayName,
+        email: datass.data().Emailid
+      }
+      console.log(data.from)
+      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
+      if (getFruit !== -1) {
+        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
+        io.sockets.connected[getname.socketid].emit("newfriend", newdata);
+      }
+    })
   })
-  // });
-
-socket.on('acceptrequest', function (data) {
-  console.log(data);
-// app.post('/acceptrequest',(req,res) => {
-  console.log(data);
-  const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
-  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
-  db.collection("users")
-  .doc(data.to)
-  .update({
-    "reciveRequest": arrayRemove(data.from),
-    "friendList":arrayUnion(data.from)
-  }).catch(err => {console.log(err)});
-  db.collection("users")
-  .doc(data.from)
-  .update({
-    "sendRequest": arrayRemove(data.to),
-    "friendList":arrayUnion(data.to)
-  }).catch(err => {console.log(err)});
-  db.collection('users').doc(data.to).get().then(datas => {
-    console.log(datas.data())
-    console.log(datas.id)
-  }).catch(err => {console.log(err);console.log("errrorr in 276")})
-  db.collection('users').doc(data.from).get().then(datas => {
-    console.log(datas.data())
-    console.log(datas.id)
-  }).catch(err => {console.log(err);console.log("errrorr in 276")})
-
-// })
-db.collection('users').doc(data.from).get().then(datass => {
-  // // console.log(data.data())
-  const newdata = {
-    uid:datass.id,
-    name:datass.data().displayName,
-    email:datass.data().Emailid
-  }
-  console.log(data.from)
-  const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
-  if (getFruit !== -1) {
-    var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
-    io.sockets.connected[getname.socketid].emit("newfriend", newdata);
-  }
-  
-  })
-  
-
-
-})
 });
 
-// var chat = io
-//   .of('/chat')
-// .on('connection', function (socket) {
-// socket.emit('a message', {
-//     that: 'only'
-//   , '/chat': 'will get'
-// });
-// chat.emit('a message', {
-//     everyone: 'in'
-//   , '/chat': 'will get'
-// });
-// chat.on('chat', function(data){
-//   console.log(data);
-// })
-// });
-// io.on('createdmessage',()=>{
-//   console.log("ll")
-// })
-
 app.post('/reject', (req, res) => {
-console.log(req.body)
-
-const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  console.log(req.body)
+  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
   db.collection("users")
-  .doc(req.body.to)
-  .update({
-    "reciveRequest": arrayRemove(req.body.from),
-  }).catch(err => {console.log(err)});
+    .doc(req.body.to)
+    .update({
+      "reciveRequest": arrayRemove(req.body.from),
+    }).catch(err => {
+      console.log(err)
+    });
   db.collection("users")
-  .doc(req.body.from)
-  .update({
-    "sendRequest": arrayRemove(req.body.to),
-  }).catch(err => {console.log(err)});
+    .doc(req.body.from)
+    .update({
+      "sendRequest": arrayRemove(req.body.to),
+    }).catch(err => {
+      console.log(err)
+    });
 })
-
 
 
 app.post('/sendrequest', (req, res) => {
   console.log(req.body);
-
-  // db.collection("friendrequest").where("to", "==", req.body.to)
-  // .get()
-  // .then(function (querySnapshot) {
-  //   // console.log(querySnapshot.docs);
-
-  //   querySnapshot.forEach(data=>{
-  //     if(data.exists){
-  //     console.log(data.data())
-  //   }else{
-  //     console.log("aaaa")
-  //   }
-  //   })
-  // }).catch(err => {
-  //   console.log(err)
-  // })
-
-  // var requests1=[];
-  // db.collection('friendrequest').get().then((data) => {
-
-  // data.forEach((data=>{
-  //   console.log(data.data())
-  //   // requests1.push(data.data())
-  // // console.log("llllllllllllll")
-  // // console.log(requests1)
-  //   // for(i=0;i<=requests1.length;i++){
-  //   //   if(requests1.to==req.body.to && requests1.from==req.body.from){
-  //   //     console.log("yes")
-  //   //     }else{
-  //   //       console.log("no")
-  //   //     }
-  //   // }
-
-  //   // if(data.data().to==req.body.to && data.data().from==req.body.from){
-  //   //   console.log("yes")
-  //   // }else{
-  //   //   console.log("no")
-  //   //   db.collection('friendrequest').add(req.body).then(() => {});
-  //   // }
-  // }))
-  // });
 })
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 app.post('/getrequests', (req, res) => {
@@ -335,101 +192,45 @@ app.post('/getrequests', (req, res) => {
   var response = [];
   db.collection("users").doc(req.body.id).get().then(data => {
     console.log(data.data().reciveRequest);
-
-
-
-
-
-
-
-    
     const recivedrequest = data.data().reciveRequest
     const recivedrequestlength = data.data().reciveRequest.length
 
     for (let i = 0; i < recivedrequest.length; i++) {
-      // console.log(recivedrequest[i]);
       db.collection("users").doc(recivedrequest[i]).get().then(data => {
         var newobj = {
-          id:recivedrequest[i],
+          id: recivedrequest[i],
           name: data.data().displayName,
           email: data.data().Emailid,
         }
-        // console.log(newobj)
-        // console.log(data)
         response.push(newobj);
-        // console.log(response)
-        if (response.length==recivedrequestlength) {
-          // res.json(response)
+        if (response.length == recivedrequestlength) {
           console.log(response)
           res.send(response)
         }
-        // res.json(newobj)
-        // console.log(response)
       });
-
-      // console.log(response)
     }
-    // console.log("-----------")
-    // console.log(response)
-  }).catch(err => {console.log(err)});
-  //   db.collection('friendrequest').get().then((data) => {
-  //     // console.log(data.docs.);
-  //     console.log(data.docs)
-  //     // var a=  data.docs.find(d=>d={to:req.body.id});
-  //     // var b = data.docs.find(d => d = {from:req.body.id});
-  //     // var c =b.data();
-  //     // console.log(c);
-  //     // console.log(a)
-  //     data.forEach((data=>{
-  //       console.log(data.data())
-  //       if(data.data().to==req.body.id){
-  //         console.log("yes")
-  //         requests1.push(data.data());
-  //       }
-  //       else{
-  //         console.log("no")
-  //       }
-  //     }))
-  //     res.json(requests1);
-  //     // .then(function (querySnapshot) {
-  //     //   //  var a=  querySnapshot.docs.map(d=>d={Emailid:req.body.Emailid});
-  //     //   //  console.log("in")
-  //     //   var b = querySnapshot.docs.find(d => d = {
-  //     //     Emailid: req.body.Emailid
-  //     //   });
-  //     //   var c = b.data()
-  //     //   console.log(c.displayName)
-  //   })
-  //   // db.collection("users").where("Emailid", "==", req.body.Emailid)
+  }).catch(err => {
+    console.log(err)
+  });
 })
+
 
 
 app.post('/login', (req, res) => {
   console.log(req.body.Emailid);
   firebas.auth().signInWithEmailAndPassword(req.body.Emailid, req.body.password).then((result) => {
-    // console.log(result.credential.toJSON())
-    // var a =result.credential.toJSON()
-    // console.log(a)
     console.log(result.user.uid)
     result.user.getIdToken().then(token => {
       console.log(token)
-      // totalresponse={
-      //   uid:result.user.uid,
-      //   token:token
-      // }
-      // res.json(totalresponse)
-      // console.log(result.user.providerData)
       db.collection("users").where("Emailid", "==", req.body.Emailid)
         .get()
         .then(function (querySnapshot) {
-          //  var a=  querySnapshot.docs.map(d=>d={Emailid:req.body.Emailid});
-          //  console.log("in")
           var b = querySnapshot.docs.find(d => d = {
             Emailid: req.body.Emailid
           });
           var c = b.data()
           console.log(c.displayName)
-           console.log(c)
+          console.log(c)
           querySnapshot.forEach((data => {
             console.log(data.id)
             const newid = data.id;
@@ -439,11 +240,11 @@ app.post('/login', (req, res) => {
               displayName: c.displayName,
             }
           }))
-
-
           res.json(totalresponse)
           console.log(result.user.providerData)
-        }).catch(err => {console.log(err)});
+        }).catch(err => {
+          console.log(err)
+        });
     })
   }).catch(err => {
     if (err.message == "There is no user record corresponding to this identifier. The user may have been deleted.") {
@@ -453,6 +254,7 @@ app.post('/login', (req, res) => {
     }
   });
 })
+
 
 app.post('/registration', (req, res) => {
   console.log(req.body);
@@ -481,80 +283,44 @@ app.post('/registration', (req, res) => {
   })
 })
 
-// app.post('/allusers', (req, res) => {
-//   db.collection('users').get().then(data => {
-//     let screms = [];
-//     data.forEach(doc => {
-//       screms.push({
-//         id: doc.id,
-//         displayName: doc.data().displayName,
-//         Emailid: doc.data().Emailid,
-//       });
-//     });
-//     res.send(screms);
-//   }).catch(err => console.log(err))
-// })
-
 
 app.post('/allusers', (req, res) => {
   console.log(req.body)
   db.collection('users').doc(req.body.uid).get().then(datas => {
     console.log(datas.data().friendList);
     var a = datas.data().friendList.length;
-  console.log(a);
-  console.log("length")
+    console.log(a);
+    console.log("length")
     db.collection('users').get().then(data => {
       let screms = [];
-              
-          if(a===0){
-            // console.log("oh yeh")
-            data.forEach(doc => {
-              screms.push({
-                id: doc.id,
-                displayName: doc.data().displayName,
-                Emailid: doc.data().Emailid,
-              });
-            })
-            }
-            else{
-      for(let i=0;i<a;i++){
-        // console.log(data.data().friendList[i]);
 
-            data.forEach(doc => {
-          if(datas.data().friendList[i]===doc.id){
-            return false;
-          }
-      
-        else{
+      if (a === 0) {
+        data.forEach(doc => {
           screms.push({
             id: doc.id,
             displayName: doc.data().displayName,
             Emailid: doc.data().Emailid,
           });
-          
-        }
-      })
-      }
-  
-        
-      
-      }
+        })
+      } else {
+        for (let i = 0; i < a; i++) {
+          data.forEach(doc => {
+            if (datas.data().friendList[i] === doc.id) {
+              return false;
+            } else {
+              screms.push({
+                id: doc.id,
+                displayName: doc.data().displayName,
+                Emailid: doc.data().Emailid,
+              });
 
+            }
+          })
+        }
+      }
       res.send(screms);
       console.log("on")
       console.log(screms)
-
-
-
-      // data.forEach(doc => {
-      //   screms.push({
-      //     id: doc.id,
-      //     displayName: doc.data().displayName,
-      //     Emailid: doc.data().Emailid,
-      //   });
-      // });
-      
-      
     }).catch(err => console.log(err))
   }).catch(err => console.log(err))
 })
@@ -564,52 +330,59 @@ app.post('/allusers', (req, res) => {
 app.post('/getrequestlist', (req, res) => {
   console.log(req.body.uid);
   db.collection('users').doc(req.body.uid).get().then(data => {
-  //   let screms = [];
-  console.log(data.data());
-  res.json(data.data().sendRequest);
-  //   data.forEach(doc => {
-  //     screms.push({
-  //       id: doc.id,
-  //       displayName: doc.data().displayName,
-  //       Emailid: doc.data().Emailid,
-  //     });
-  //   });
-  //   res.send(screms);
+    console.log(data.data());
+    res.json(data.data().sendRequest);
   }).catch(err => console.log(err))
 })
 
 
 var arrayoffriend = [];
 app.post('/getfriends', (req, res) => {
-console.log(req.body);
-db.collection('users').doc(req.body.id).get().then(data => {
-  console.log(data.data().friendList.length);
-  var newcount = data.data().friendList.length;
-  for (let i = 0; i <newcount; i++) {
-  db.collection('users').doc(data.data().friendList[i]).get().then(data => {
-  // // console.log(data.data())
-  const newdata = {
-    uid:data.id,
-    name:data.data().displayName,
-    email:data.data().Emailid
-  }
-  arrayoffriend.push(newdata);
-// console.log(arrayoffriend)
-  if (arrayoffriend.length == newcount) {
-    console.log(arrayoffriend);
-    res.send(arrayoffriend);
-  }
+  console.log(req.body);
+  db.collection('users').doc(req.body.id).get().then(data => {
+    console.log(data.data().friendList.length);
+    var newcount = data.data().friendList.length;
+    for (let i = 0; i < newcount; i++) {
+      db.collection('users').doc(data.data().friendList[i]).get().then(data => {
+        const newdata = {
+          uid: data.id,
+          name: data.data().displayName,
+          email: data.data().Emailid
+        }
+        arrayoffriend.push(newdata);
+        if (arrayoffriend.length == newcount) {
+          console.log(arrayoffriend);
+          res.send(arrayoffriend);
+        }
+      })
+    }
+    arrayoffriend = [];
+  }).catch(err => {
+    console.log(err)
   })
-  
-}
-arrayoffriend =[];
-}).catch(err => {console.log(err)})
 });
 
 
 
 
-
+app.post('/removefriend', (req, res) => {
+  console.log(req.body)
+  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  db.collection("users")
+    .doc(req.body.local)
+    .update({
+      "friendList": arrayRemove(req.body.from),
+    }).catch(err => {
+      console.log(err)
+    });
+  db.collection("users")
+    .doc(req.body.from)
+    .update({
+      "friendList": arrayRemove(req.body.local),
+    }).catch(err => {
+      console.log(err)
+    });
+})
 
 
 

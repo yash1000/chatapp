@@ -36,5 +36,6 @@ export const appinfo = {
     acceptrequest: 'acceptrequest',
     getfriends: 'getfriends',
     reject: 'reject',
+    removefriend: 'removefriend',
   }
 };

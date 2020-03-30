@@ -36,4 +36,16 @@ export class FriendsComponent implements OnInit {
     });
     // console.log(this.datas)
   }
+  removefriend(id) {
+    console.log(id);
+    const newid = {
+      local: this.localdata.uid,
+      from: id,
+    };
+    const getFruit = this.datas.findIndex(d => d.id === id);
+    console.log(getFruit);
+    this.datas.splice(getFruit, 1);
+    console.log(newid);
+    this.api.removefriend(newid).subscribe((res: any) => {});
+  }
 }
