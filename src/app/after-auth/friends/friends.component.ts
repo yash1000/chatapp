@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ApiCalls } from '../services/apicalls.service';
+import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
 @Component({
   selector: 'app-friends',

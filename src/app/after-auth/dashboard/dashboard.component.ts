@@ -14,6 +14,7 @@ export class DashboardComponent implements OnInit {
   displayname: any;
   uid: any;
   message = [];
+  room: string;
 
   constructor(private router: Router) {}
 
@@ -24,7 +25,7 @@ export class DashboardComponent implements OnInit {
     this.uid = this.localdata.uid;
     const socket = io('http://localhost:8000');
     socket.emit('startconnnection', { connencted: this.localdata.uid });
-
+    // socket.to('room1').emit('event', 'helo');
     socket.on('online users', data => {
       console.log(data.online);
       this.datas = data.online;
@@ -38,6 +39,36 @@ export class DashboardComponent implements OnInit {
       console.log(data);
       this.datas = data;
     });
+
+    if ( this.uid === 'e7Zlrf7gxZuZOLdGw4mi' || this.uid === 'wgX6pG4uILKpSLWzpRmG') {
+      this.room = 'room1';
+    } else {
+      this.room = 'room2';
+    }
+
+    socket.emit('create', this.room);
+    // socket.on('chat message', (data) => {
+    //   console.log(data);
+    //   socket.emit('room1', `hello i m ${this.localdata.uid}`);
+    socket.on('new data', (datas) => {console.log(datas); });
+    // });
+
+    // chat.on('connect',  () => {
+
+
+//     const room = 'abc123';
+
+//     socket.on('connect', () => {
+//    // Connected, let's sign-up for to receive messages for this room
+//    socket.emit('room', room);
+// });
+
+//     socket.on('message', (data) => {
+//    console.log('Incoming message:', data);
+// });
+
+
+
 
   }
   openNav() {
@@ -54,10 +85,7 @@ export class DashboardComponent implements OnInit {
     //   console.log(data);
     //   this.data = data.server;
     // });
-    // const chat = io.connect('http://localhost:8000/chat');
-    // // const socket = io('http://localhost:8000');
-    // const chat = io.connect('http://localhost:8000/chat');
-    // const news = io.connect('http://localhost:8000/news');
+
     console.log(this.datas);
     const socket = io('http://localhost:8000');
     // chat.on('connect',  () => {
@@ -82,15 +110,42 @@ export class DashboardComponent implements OnInit {
     this.router.navigate(['/users']);
   }
   chat(id, input) {
-    console.log(id);
-    console.log(input.value);
     const socket = io('http://localhost:8000');
-    // chat.on('connect',  () => {
-    socket.emit('chat', {
-      to: id,
-      from: this.uid,
-      message: input.value
+
+
+    console.log(id);
+    // socket.on('chat message', (data) => {
+      // console.log(data);
+
+
+
+    // socket.emit('create', this.room);
+    // socket.on('chat message', (data) => {
+    //   console.log(data);
+    //   socket.emit('room1', `hello i m ${this.localdata.uid}`);
+    //   socket.on('new data', (datas) => {console.log(datas); });
+    // });
+
+
+    console.log(this.room);
+    socket.emit('create', this.room);
+    socket.on('chat message', (data) => {
+    socket.emit(this.room, {
+        from: this.uid,
+        message: input.value
+      });
+    // socket.on('new data', (datas) => {console.log(datas.message); });
+      // socket.emit('room1', );
     });
+    // chat.on('connect',  () => {
+       // set-up a connection between the client and the server
+
+// let's assume that the client page, once rendered, knows what room it wants to join
+//     socket.emit('chat', {
+//   to: id,
+//   from: this.uid,
+//   message: input.value
+// });
   }
   onrequest() {
     this.router.navigate(['/request']);

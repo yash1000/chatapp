@@ -5,99 +5,9 @@ $blue: #94C2ED;
 $orange: #E38968;
 $gray: #92959E;
 
-*, *:before, *:after {
-  box-sizing: border-box;
-}
 
-body {
-  background: #C5DDEB;
-  font: 14px/20px "Lato", Arial, sans-serif;
-  padding: 40px 0;
-  color: white;
-}
 
-.container1 {
-//   margin: 0 auto;
-  width: 30%;
-  background: #444753;
-  border-radius: 5px;
-  height: 100vh;
-  display: inline-block;
-//   overflow: scroll;
-  overflow-x: scroll;
-//   overflow-y:hidden;
-}
 
-.people-list {
-  width:100%;
-//   float: left;
-padding-left: 0px !important;
-  margin-left: 0px !important;
-  .search {
-    padding: 20px;
-  }
-  
-  input {
-    border-radius: 3px;
-    border: none;
-    padding: 14px;
-    color: white;
-    background: #6A6C75;
-    width: 90%;
-    font-size: 14px;
-  }
-  
-  .fa-search {
-    position: relative;
-    left: -25px;
-  }
-  
-  ul {
-    padding: 20px;
-    height: 100%;
- 
-    
-    
-    
-    li {
-      padding-bottom: 20px;
-    }
-  }
-  
-  img {
-    float: left;
-  }
-  
-  .about {
-    float: left;
-    margin-top: 8px;
-  }
-  
-  .about {
-    padding-left: 8px;
-  }
-  
-  .status {
-    color: $gray;
-  }
-  
-}
-
-.chat {
-  width: 70%;
-//   margin-top: 12px;
-height: 100vh;
-overflow: scroll;
-  padding: 10px;
-  float:right;
-//   position: absolute;
-  background: #F2F5F8;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-//   height:100px !important;
-// margin-left:40px;
-  color: #434651;
-  
   .chat-header {
     // padding: 20px;
     border-bottom: 2px solid white;
@@ -134,6 +44,7 @@ overflow: scroll;
     border-bottom: 2px solid white;
     overflow-y: scroll;
     height: 65vh;
+  }
     
     .message-data {
       margin-bottom: 15px;
@@ -182,8 +93,7 @@ overflow: scroll;
       }
     }
     
-  }
-  
+
   .chat-message {
     // padding: 30px;
     
@@ -220,7 +130,7 @@ overflow: scroll;
       }
     }
   }
-}
+
 
 .online, .offline, .me {
     margin-right: 3px;

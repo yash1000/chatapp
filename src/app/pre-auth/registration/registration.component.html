@@ -9,7 +9,7 @@
 				</div>
 				
 
-				<form class="login100-form validate-form"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
+				<form class="login100-form validate-form" enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
 					<span class="login100-form-title">
 						Member Registration
 					</span>
@@ -20,10 +20,11 @@
 						<span class="focus-input100"></span>
 						<span class="symbol-input100">
 							
-							<i class="fa fa-envelope" aria-hidden="true"></i>
+							<i class="fa fa-user" aria-hidden="true"></i>
 						</span>
 					</div>
-					<span *ngIf="!profileForm.get('Emailid').valid && profileForm.get('Emailid').touched" class="help-block">please Enter a valid Email-Id with . and @ </span><br>
+					<span *ngIf="!profileForm.get('username').valid && profileForm.get('username').touched" class="help-block">please Enter Username</span><br>
+
 
 
 					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
@@ -91,7 +92,18 @@
                     <ng-template #notShow345>
                         <span  *ngIf="!profileForm.get('cpassword').valid && profileForm.get('cpassword').touched" class="help-block">please Match above password</span><br>
                         </ng-template>
-                   
+				   
+					<div class="wrap-input100 validate-input" data-validate = "Valid email is required: ex@abc.xyz">
+
+						<input type="file" formControlName="image"  (change)="createFormData($event)" id="myfile" name="myfile"><br><br>
+						
+						<span class="symbol-input100">
+							
+                            <i class="fa fa-upload" id="newicon" aria-hidden="true"></i>
+                            
+						</span>
+					</div>
+						
                     
 					<div class="container-login100-form-btn">
 						<button class="login100-form-btn"  [disabled]=!profileForm.valid>

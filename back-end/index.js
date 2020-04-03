@@ -7,6 +7,10 @@ const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
+// var gcloud = require('gcloud');
+// const gcloud = require('google-cloud')
+// var gcloud = require('gcloud')({ ... }); var gcs = gcloud.storage();
+// var bucket = gcs.bucket('<your-firebase-storage-bucket>');
 var config = {
   apiKey: "AIzaSyDjCZoHVr6BMiQMS-uO9U5fN6gcp0mPWqM",
   authDomain: "chatpp-da297.firebaseapp.com",
@@ -17,7 +21,17 @@ var config = {
   appId: "1:956935763818:web:ae9d71ac0e67ebb3ab9713",
   measurementId: "G-KKVNKKNV10"
 };
+
+const formidable = require('formidable');
+const form = formidable({ multiples: true });
 firebas.initializeApp(config);
+// var storage = firebase.storage().bucket();
+// const {Storage} = require('@google-cloud/storage');
+// var storages = firebase.storage();
+// var storageRef = storages.bucket("my-bucket")
+// const storage = new Storage();
+
+
 app.use(bodyparser.json());
 const cors = require('cors');
 var http = require('http').createServer(app);
@@ -31,6 +45,25 @@ app.use(bodyparser.urlencoded({
 
 var arrayforconnected = [];
 io.on('connection', function (socket) {
+
+    socket.on('create', function(room) {
+      socket.join(room);
+      console.log(room)
+      io.sockets.in(room).emit('chat message', "asasas");
+      socket.on(room, data => {
+        console.log("000000000000000000000")
+        console.log(data)
+        socket.to(room).emit('new data',`data is ${data.message};
+        send from ${data.from}
+        send to ${room}`);
+        // socket.on('new datas',data => {
+        //   console.log(data)
+          
+        // });
+      });
+  
+    });
+
 
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
@@ -156,9 +189,23 @@ io.on('connection', function (socket) {
       const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
       if (getFruit !== -1) {
         var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
+   
         io.sockets.connected[getname.socketid].emit("newfriend", newdata);
       }
     })
+  })
+
+
+  socket.on('buttonshow', function (data) {
+    console.log(data);
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
+           console.log(getname)
+           console.log(data.from);
+      io.sockets.connected[getname.socketid].emit("newbutton", data.to);
+      console.log("emitted")
+    }
   })
 });
 
@@ -191,6 +238,7 @@ app.post('/getrequests', (req, res) => {
   console.log(req.body.id)
   var response = [];
   db.collection("users").doc(req.body.id).get().then(data => {
+    console.log(data.data())
     console.log(data.data().reciveRequest);
     const recivedrequest = data.data().reciveRequest
     const recivedrequestlength = data.data().reciveRequest.length
@@ -258,6 +306,34 @@ app.post('/login', (req, res) => {
 
 app.post('/registration', (req, res) => {
   console.log(req.body);
+   
+  // form.parse(req, (err, fields, files) => {
+  //   if (err) {
+  //     next(err);
+  //     return;
+  //   }
+  //   console.log(fields)
+  //   console.log(files)
+  //   // ({ fields, files });
+  //   var storageRef = firebas.storage().ref();
+
+  //   var uploadTask = storageRef.child('images/octofez.png').put(files);
+    
+  //   // Register three observers:
+  //   // 1. 'state_changed' observer, called any time the state changes
+  //   // 2. Error observer, called on failure
+  //   // 3. Completion observer, called on successful completion
+  //   uploadTask.on('state_changed', function(snapshot){
+  //   }, function(error) {
+  //       console.error("Something nasty happened", error);
+  //   }, function() {
+  //     var downloadURL = uploadTask.snapshot.downloadURL;
+  //     console.log("Done. Enjoy.", downloadURL);
+  //   });
+  //   console.log(`${files} uploaded to ${'my-bucket'}.`);
+  // });
+  // });
+
   firebas.auth().createUserWithEmailAndPassword(req.body.Emailid, req.body.password).then(data => {
 
     db.collection('users').add(req.body).then(() => {
@@ -284,43 +360,26 @@ app.post('/registration', (req, res) => {
 })
 
 
+
 app.post('/allusers', (req, res) => {
   console.log(req.body)
   db.collection('users').doc(req.body.uid).get().then(datas => {
     console.log(datas.data().friendList);
     var a = datas.data().friendList.length;
     console.log(a);
-    console.log("length")
     db.collection('users').get().then(data => {
       let screms = [];
-
-      if (a === 0) {
-        data.forEach(doc => {
-          screms.push({
-            id: doc.id,
-            displayName: doc.data().displayName,
-            Emailid: doc.data().Emailid,
-          });
-        })
-      } else {
-        for (let i = 0; i < a; i++) {
           data.forEach(doc => {
-            if (datas.data().friendList[i] === doc.id) {
-              return false;
-            } else {
               screms.push({
                 id: doc.id,
                 displayName: doc.data().displayName,
                 Emailid: doc.data().Emailid,
               });
-
-            }
           })
-        }
-      }
-      res.send(screms);
-      console.log("on")
-      console.log(screms)
+          const response = screms.filter(n => !datas.data().friendList.some(n2 => n.id === n2));
+          console.log("on")
+          console.log(response)
+          res.send(response);
     }).catch(err => console.log(err))
   }).catch(err => console.log(err))
 })
@@ -342,6 +401,9 @@ app.post('/getfriends', (req, res) => {
   db.collection('users').doc(req.body.id).get().then(data => {
     console.log(data.data().friendList.length);
     var newcount = data.data().friendList.length;
+    if(newcount===0) {
+      res.json("sorry you don't have friends");
+    }else{
     for (let i = 0; i < newcount; i++) {
       db.collection('users').doc(data.data().friendList[i]).get().then(data => {
         const newdata = {
@@ -356,6 +418,7 @@ app.post('/getfriends', (req, res) => {
         }
       })
     }
+  }
     arrayoffriend = [];
   }).catch(err => {
     console.log(err)

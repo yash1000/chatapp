@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { CustomValidators } from '../services/custom-validators';
-import { ApiCalls } from '../services/apicalls.service';
+import { CustomValidators } from '../../services/custom-validators';
+import { ApiCalls } from '../../services/apicalls.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -18,7 +18,7 @@ export class RegistrationComponent implements OnInit {
   ngOnInit() {
 
     this.profileForm = this.fb.group({
-      username:['', Validators.required],
+      username: ['', Validators.required],
       Emailid: ['', [Validators.required, Validators.email]],
       password: [
         null,
@@ -38,8 +38,8 @@ export class RegistrationComponent implements OnInit {
           Validators.minLength(8)
         ]
       ],
-      cpassword: [ null, [Validators.required, Validators.compose([CustomValidators.matchValues('password'),
-      ])]]
+      image: ['', Validators.required],
+      cpassword: [ null, [Validators.required, Validators.compose([CustomValidators.matchValues('password'),      ])]]
     });
   }
   onSubmit(event) {
@@ -49,8 +49,13 @@ export class RegistrationComponent implements OnInit {
       Emailid: this.profileForm.value.Emailid,
       password: this.profileForm.value.password
     };
+    this.fd.append('file', this.selectedFile, this.selectedFile.name);
+    this.fd.append('displayName', this.profileForm.value.username);
+    this.fd.append('Emailid',  this.profileForm.value.Emailid);
+    this.fd.append('password', this.profileForm.value.password);
+
     console.log(this.new);
-    this.api.registration(this.new).subscribe((res: any) => {
+    this.api.registration(this.fd).subscribe((res: any) => {
       console.log(res.message);
       if(res.message === 'successfully resgisterd') {
         this.routes.navigate(['/login']);
@@ -61,6 +66,15 @@ export class RegistrationComponent implements OnInit {
       });
   }
   onlogin(){
-    this.routes.navigate(['/login'])
+    this.routes.navigate(['/login']);
+  }
+  // tslint:disable-next-line:member-ordering
+  selectedFile: File = null;
+  // tslint:disable-next-line:member-ordering
+  fd = new FormData();
+  createFormData(event) {
+  // tslint:disable-next-line:whitespace
+  // tslint:disable-next-line:no-angle-bracket-type-assertion
+  this.selectedFile = <File>event.target.files[0];
   }
 }

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
-import { ApiCalls } from '../services/apicalls.service';
+import { ApiCalls } from '../../services/apicalls.service';
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
@@ -73,6 +73,12 @@ export class RequestComponent implements OnInit {
     };
     this.api.reject(idobject).subscribe(data => {
          console.log(data);
+       });
+    const socket = io('http://localhost:8000');
+    socket.emit('buttonshow', {
+       message : 'buttondiabe',
+       from: id,
+       to: this.localdata.uid
        });
   }
 }

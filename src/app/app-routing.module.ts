@@ -1,14 +1,15 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LoginComponent } from './login/login.component';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { RegistrationComponent } from './registration/registration.component';
+import { LoginComponent } from './pre-auth/login/login.component';
+import { DashboardComponent } from './after-auth/dashboard/dashboard.component';
+import { RegistrationComponent } from './pre-auth/registration/registration.component';
 import { SecurePage } from './services/protected.service';
 import { AuthGuard } from './services/authService.service';
-import { ChatComponent } from './chat/chat.component';
-import { UsersComponent } from './users/users.component';
-import { RequestComponent } from './request/request.component';
-import { FriendsComponent } from './friends/friends.component';
+import { ChatComponent } from './after-auth/chat/chat.component';
+import { UsersComponent } from './after-auth/users/users.component';
+import { RequestComponent } from './after-auth/request/request.component';
+import { FriendsComponent } from './after-auth/friends/friends.component';
+import { ChatMessageComponent } from './after-auth/chat-message/chat-message.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'users', canActivate: [SecurePage], component: UsersComponent},
   {path: 'request', canActivate: [SecurePage], component: RequestComponent},
   {path: 'friends', canActivate: [SecurePage], component: FriendsComponent},
+  {path: 'chat-message', canActivate: [SecurePage], component: ChatMessageComponent},
 ];
 
 @NgModule({

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
-import { CustomValidators } from '../services/custom-validators';
-import { ApiCalls } from '../services/apicalls.service';
+import { CustomValidators } from '../../services/custom-validators';
+import { ApiCalls } from '../../services/apicalls.service';
 import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',

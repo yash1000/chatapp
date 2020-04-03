@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterContentChecked, AfterContentInit, AfterViewInit, OnChanges } from '@angular/core';
-import { ApiCalls } from '../services/apicalls.service';
+import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
 import * as $ from 'jquery';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
@@ -24,15 +24,7 @@ export class UsersComponent implements OnInit {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     this.uid = {uid: this.localdata.uid };
     const local = JSON.parse(localStorage.getItem('accessToken'));
-    this.api.getrequestlist(this.uid).subscribe((data: any) => {
-      console.log(data);
-      this.newdata = data;
-      for (const [i, v] of this.newdata.entries()) {
-        setTimeout(() => {
-          $(`#abc` + v).prop('disabled', true);
-     }, 100);
-      }
-   });
+
     this.api.getallusers(this.uid).subscribe((data: any) => {
       console.log(data);
       const getname = data.findIndex(data => data.id === local.uid);
@@ -40,8 +32,22 @@ export class UsersComponent implements OnInit {
       this.data = data;
       console.log(this.data);
     });
+    this.api.getrequestlist(this.uid).subscribe((data: any) => {
+      console.log(data);
+      this.newdata = data;
+      for (const [i, v] of this.newdata.entries()) {
+        setTimeout(() => {
+          $(`#abc` + v).prop('disabled', true);
+     }, 1000);
+      }
+   });
     const socket = io('http://localhost:8000');
-
+    socket.emit('startconnnection', { connencted: this.localdata.uid });
+    socket.on('newbutton', data => {
+    console.log(data);
+    $(`#abc${data}`).prop('disabled', false);
+    console.log(`${data}`);
+    });
   }
 
   requestsend(id) {
@@ -53,7 +59,7 @@ export class UsersComponent implements OnInit {
     //   message: 'friend request'
     // });
     const socket = io('http://localhost:8000');
-    socket.emit('startconnnection', { connencted: this.localdata.uid });
+    // socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.emit('request', {
       to: id,
       from: this.uid.uid,
@@ -63,12 +69,12 @@ export class UsersComponent implements OnInit {
       console.log(data);
       this.datas = data;
     });
-    socket.on('buttondisable', data => {
-      console.log(data);
-      this.accept = data;
-      $(`#abc${id}`).prop('disabled', true);
-      console.log(`${id}`);
-    });
+    // socket.on('buttondisable', data => {
+    //   console.log(data);
+    //   this.accept = data;
+    $(`#abc${id}`).prop('disabled', true);
+    console.log(`${id}`);
+    // });
 
     console.log(id);
     // console.log(this.localdata);

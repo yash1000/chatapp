@@ -4,19 +4,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
-import { LoginComponent } from './login/login.component';
+import { LoginComponent } from './pre-auth/login/login.component';
 import { ApiCalls } from './services/apicalls.service';
-import { DashboardComponent } from './dashboard/dashboard.component';
-import { RegistrationComponent } from './registration/registration.component';
+import { DashboardComponent } from './after-auth/dashboard/dashboard.component';
+import { RegistrationComponent } from './pre-auth/registration/registration.component';
 import { AuthGuard } from './services/authService.service';
 // import { NgHttpLoaderModule } from 'ng-http-loader'; 
 // import { NgHttpLoaderModule } from 'ng-http-loader';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { SecurePage } from './services/protected.service';
-import { ChatComponent } from './chat/chat.component';
-import { UsersComponent } from './users/users.component';
-import { RequestComponent } from './request/request.component';
-import { FriendsComponent } from './friends/friends.component';
+import { ChatComponent } from './after-auth/chat/chat.component';
+import { UsersComponent } from './after-auth/users/users.component';
+import { RequestComponent } from './after-auth/request/request.component';
+import { FriendsComponent } from './after-auth/friends/friends.component';
+import { ChatMessageComponent } from './after-auth/chat-message/chat-message.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -27,6 +28,7 @@ import { FriendsComponent } from './friends/friends.component';
     UsersComponent,
     RequestComponent,
     FriendsComponent,
+    ChatMessageComponent,
   ],
   imports: [
     BrowserModule,
