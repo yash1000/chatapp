@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -12,6 +13,9 @@ export class ChatComponent implements OnInit {
   datas = [];
   onlineusers: any;
   chatname: any;
+  room: any;
+  messagesendid: any;
+  newmessagearray = [];
 
   constructor( private api: ApiCalls) { }
 
@@ -51,12 +55,83 @@ export class ChatComponent implements OnInit {
     //     }
     //   }
     // }
+
+    // socket.emit('create', this.room);
+    // socket.on('chat message', (data) => {
+    //   console.log(data);
+    //   socket.emit('room1', `hello i m ${this.localdata.uid}`);
+    socket.on('new data', (datas) => {console.log(datas); });
+    socket.on('chat message', data => {
+    console.log(data);
+    });
   }
   changecomponent(id, name) {
-    console.log(id);
-    console.log(name);
+    const socket = io('http://localhost:8000');
+    const date = new Date(Date.now());
+    const d = new Date();
+    const h = d.getHours();
+    const m = d.getMinutes();
+    // this.room = id + this.localdata.uid;
+    // if ( this.localdata.uid  || id ) {
+    //   this.room = this.localdata.uid + id;
+    // } else {
+    //   this.room = 'room2';
+    // }
+    this.messagesendid = id;
+    // console.log(id);
+    // console.log(name);
     this.chatname = name;
+    // console.log(this.room);
+    // socket.emit('create', this.room);
+    // socket.on('chat message', (data) => {
+    // socket.emit(this.room, {
+    //     from: this.localdata.uid,
+    //     // message: input.value
+    //   });
+    // // socket.on('new data', (datas) => {console.log(datas.message); });
+    //   // socket.emit('room1', );
+    // });
+    socket.emit('new', { me: this.localdata.uid,
+      to: id
+    });
+    socket.on('room is', data => {
+      console.log(data);
+      socket.emit(data, {
+        fordatabase: this.localdata.uid,
+        sendby: this.localdata.displayName,
+        internationaldate: date.toString(),
+        date: `${h}:${m}`,
+        to: this.messagesendid,
+        message: 'hello i m ' + this.localdata.displayName});
+    });
+    socket.on('welcome message', data => {
+      console.log(data);
+      this.newmessagearray.push(data);
+    });
   }
-  
-
+  messagesend(text) {
+    // console.log(Date.now());
+    const date = new Date(Date.now());
+    const d = new Date();
+    const h = d.getHours();
+    const m = d.getMinutes();
+    // console.log(date.toString());
+    // console.log(text.value);
+    const socket = io('http://localhost:8000');
+    socket.emit('new', { me: this.localdata.uid,
+      to: this.messagesendid
+    });
+    socket.on('room is', data => {
+      // console.log(data);
+      socket.emit(data, {
+        message: text.value,
+        fordatabase: this.localdata.uid,
+        sendby: this.localdata.displayName,
+        internationaldate: date.toString(),
+        date: `${h}:${m}`,
+        to: this.messagesendid
+      });
+    });
+  }
 }
+

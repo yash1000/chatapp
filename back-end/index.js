@@ -46,24 +46,97 @@ app.use(bodyparser.urlencoded({
 var arrayforconnected = [];
 io.on('connection', function (socket) {
 
-    socket.on('create', function(room) {
-      socket.join(room);
-      console.log(room)
-      io.sockets.in(room).emit('chat message', "asasas");
+    // socket.on('create', function(room) {
+    //   socket.join(room);
+    //   console.log(room)
+    //   io.sockets.in(room).emit('chat message', "asasas");
+    //   socket.on(room, data => {
+    //     console.log("000000000000000000000")
+    //     console.log(data)
+    //     socket.to(room).emit('new data',`data is ${data.message};
+    //     send from ${data.from}
+    //     send to ${room}`);
+    //     // socket.on('new datas',data => {
+    //     //   console.log(data)
+          
+    //     // });
+    //   });
+  
+  
+    // });
+  socket.on('new' , (data) => {
+    const availableRooms = [];
+      console.log(data)
+      console.log(io.sockets.adapter.rooms)
+      const rooms = io.sockets.adapter.rooms;
+      if (rooms) {
+        for (var roomr in rooms) {
+            if (!rooms[roomr].hasOwnProperty(roomr)) {
+                availableRooms.push(roomr);
+            }
+        }
+    }
+    for(var i=0;i<availableRooms.length;i++){
+    console.log(availableRooms[i])
+    }
+    var a = data.to+data.me;
+    var b =data.me+data.to;
+    var c =availableRooms.includes(a);
+    var d =availableRooms.includes(b)
+    if(c || d){
+      console.log("YES");
+      console.log(c);
+      if(c === true){
+        console.log("in c")
+        const e = availableRooms.find(d => d === a)
+        console.log("============")
+        console.log(e);
+        socket.join(e);
+        socket.emit('room is', e);
+        console.log(`joined ${e}`)
+        // io.sockets.in(e).emit('chat message', "asasas");
+        socket.on(e, data => {
+          console.log(data);
+          io.sockets.in(e).emit('welcome message', data);
+        });
+      }
+      if(d === true){
+        console.log("in d")
+        const f = availableRooms.find(d => d === b)
+        console.log("++++++++")
+        console.log(f);
+        socket.join(f);
+        socket.emit('room is', f);
+        console.log(`joined ${f}`)
+        // io.sockets.in(f).emit('chat message', "asasas");
+        socket.on(f, data => {
+          console.log(data);
+          io.sockets.in(f).emit('welcome message', data);
+        });
+      }
+      
+    } else {
+      const room = data.me+data.to;
+
+      // var n = room.search(data.me);
+      // var m = room.search(data.to);
+      // if(n !== -1 || m !== -1){
+        socket.join(room);
+        socket.emit('room is', room);
+        console.log(`joined ${room}`)
+        // io.sockets.in(room).emit('chat message', "asasas");
+      // }
       socket.on(room, data => {
-        console.log("000000000000000000000")
-        console.log(data)
-        socket.to(room).emit('new data',`data is ${data.message};
-        send from ${data.from}
-        send to ${room}`);
+        console.log(data);
+        io.sockets.in(room).emit('welcome message', data);
+      });
+    }
+
         // socket.on('new datas',data => {
         //   console.log(data)
           
         // });
-      });
-  
-    });
-
+    })
 
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
