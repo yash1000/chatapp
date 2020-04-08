@@ -17,6 +17,7 @@ import { ChatComponent } from './after-auth/chat/chat.component';
 import { UsersComponent } from './after-auth/users/users.component';
 import { RequestComponent } from './after-auth/request/request.component';
 import { FriendsComponent } from './after-auth/friends/friends.component';
+import { HeaderComponent } from './after-auth/header/header.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import { FriendsComponent } from './after-auth/friends/friends.component';
     UsersComponent,
     RequestComponent,
     FriendsComponent,
+    HeaderComponent,
   ],
   imports: [
     BrowserModule,

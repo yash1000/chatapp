@@ -9,6 +9,7 @@ import { ChatComponent } from './after-auth/chat/chat.component';
 import { UsersComponent } from './after-auth/users/users.component';
 import { RequestComponent } from './after-auth/request/request.component';
 import { FriendsComponent } from './after-auth/friends/friends.component';
+import { HeaderComponent } from './after-auth/header/header.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'login', pathMatch: 'full'},
@@ -18,7 +19,8 @@ const routes: Routes = [
   {path: 'chat', canActivate: [SecurePage], component: ChatComponent},
   {path: 'users', canActivate: [SecurePage], component: UsersComponent},
   {path: 'request', canActivate: [SecurePage], component: RequestComponent},
-  {path: 'friends', canActivate: [SecurePage], component: FriendsComponent}
+  {path: 'friends', canActivate: [SecurePage], component: FriendsComponent},
+  {path: 'header', canActivate: [SecurePage], component: HeaderComponent} 
 ];
 
 @NgModule({

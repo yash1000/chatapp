@@ -71,12 +71,7 @@ export class DashboardComponent implements OnInit {
 
 
   }
-  openNav() {
-    document.getElementById('mySidenav').style.width = '250px';
-  }
-  closeNav() {
-    document.getElementById('mySidenav').style.width = '0';
-  }
+
 //   socket(input) {
 //     // console.log(input.value);
 //     // const socket = io('http://localhost:8000');

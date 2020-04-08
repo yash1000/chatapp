@@ -1,28 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Navbar</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <!-- <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <p class="nav-link"></p>
-        </li>
-      </ul> -->
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item active">
-            <p class="nav-link"><span style="font-size:30px;cursor:pointer;color: black;" (click)="openNav()"> {{displayname}}</span></p>
-          </li>
-          <li class="nav-item">
-            <p class="nav-link">Logout</p>
-          </li>
-          
-       
-        </ul>
-       
-      </div>
-  </nav>
+<app-header></app-header>
   <!-- <button class="btn btn-primary" (click)="socket(input)">button</button>
   <div>{{data}}</div>
 <input #input placeholder="enter"/> -->
@@ -36,7 +12,7 @@
 <div *ngFor="let m of message">
 <div>{{m}}</div>
 </div> -->
-<div id="mySidenav" class="sidenav">
+<!-- <div id="mySidenav" class="sidenav">
   <p style="cursor: pointer;" class="closebtn" (click)="closeNav()">&times;</p>
   <p class="link" (click)="ondashboard()">Chat</p>
   <p class="link">Account</p>
@@ -45,6 +21,96 @@
   <p class="link" href="#">Query</p>
   <p class="link" (click)="onrequest()">Requests</p>
 
+</div> -->
+
+<!-- <div class="allcomponent">
+  <div class="card-body">
+    <h2 class="card-front component">
+      First Card
+    </h2>
+
+    <p class="card-back">
+      Back face content.
+    </p>
+  </div>
+<div class="component chat">Chat</div>
+<div class="component">Account</div>
+<div class="component">Friends</div>
+<div class="component">Users</div>
+<div class="component">Query</div>
+<div class="component">Requests</div>
+</div> -->
+
+
+<div class="allcomponent">
+<div class="cards">
+  <a class="card" (click)="ondashboard()">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Chat
+      </h2>
+
+      <p class="card-chat-back card-back">
+      </p>
+    </div>
+  </a>
+
+  <a class="card">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Account
+      </h2>
+
+      <p class="card-back card-account-back">
+      </p>
+    </div>
+  </a>
+
+  <a class="card" (click)="friends()">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Friends
+      </h2>
+
+      <p class="card-back card-friend-back">
+        
+      </p>
+    </div>
+  </a>
+
+  <a class="card" (click)="onusers()">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Users
+      </h2>
+
+      <p class="card-back card-users-back">
+        
+      </p>
+    </div>
+  </a>
+
+  <a class="card">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Query
+      </h2>
+
+      <p class="card-back card-quesry-back">
+      </p>
+    </div>
+  </a>
+
+  <a class="card" (click)="onrequest()">
+    <div class="card-body">
+      <h2 class="card-front text-center">
+        Requests
+      </h2>
+
+      <p class="card-back card-request-back">
+      </p>
+    </div>
+  </a>
 </div>
 
 
@@ -52,5 +118,4 @@
 
 
 
-
-
+</div>  
