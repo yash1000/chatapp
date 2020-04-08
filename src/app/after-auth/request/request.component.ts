@@ -10,6 +10,7 @@ export class RequestComponent implements OnInit {
   localdata: any;
   objectofid: any;
   datas = [];
+  newdatas = [];
   constructor(private api: ApiCalls) {}
 
   ngOnInit() {
@@ -25,22 +26,33 @@ export class RequestComponent implements OnInit {
     this.objectofid = {
       id: this.localdata.uid
     };
+    const socket = io('http://localhost:8000');
+
+    socket.emit('startconnnection', { connencted: this.localdata.uid });
+    socket.on('online users', data => {
+      console.log(data.online);
+      this.newdatas = data.online;
+    });
+    const getFruit = this.newdatas.findIndex(d => d.user === this.localdata.uid);
+    console.log(getFruit);
+    console.log(this.newdatas);
+    // if (getFruit !== -1) {
+
+    socket.on('accept message', data => {
+      console.log(data);
+      this.datas.push(data);
+    });
+  // } else {
     this.api.getrequests(this.objectofid).subscribe((data: any) => {
       // console.log(data);
+      // tslint:disable-next-line:prefer-for-of
       for (let i = 0; i < data.length; i++) {
         this.datas.push(data[i]);
         console.log(data);
         // console.log(this.datas);
       }
     });
-    const socket = io('http://localhost:8000');
-
-    socket.emit('startconnnection', { connencted: this.localdata.uid });
-
-    socket.on('accept message', data => {
-      console.log(data);
-      this.datas.push(data);
-    });
+  // }
   }
   acceptfriendrequest(id) {
     console.log(id);

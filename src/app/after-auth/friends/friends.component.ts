@@ -30,9 +30,15 @@ export class FriendsComponent implements OnInit {
     };
     this.api.getfriends(this.objectofid).subscribe((res: any) => {
       console.log(res);
-      for(let i=0;i<res.length;i++){
+      // tslint:disable-next-line: quotemark
+      if (res === "sorry you don't have friends") {
+
+      } else {
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < res.length; i++) {
       this.datas.push(res[i]);
     }
+  }
     });
     // console.log(this.datas)
   }

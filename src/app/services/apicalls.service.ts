@@ -37,4 +37,7 @@ export class ApiCalls {
   removefriend(id) {
     return this.https.post(this.baseurl + appinfo.info.removefriend, id);
   }
+  getmessages(id) {
+    return this.https.post(this.baseurl + appinfo.info.getmessages, id);
+  }
 }

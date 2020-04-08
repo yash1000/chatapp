@@ -10,15 +10,21 @@
         <input type="text" placeholder="search" />
         <i class="fa fa-search"></i>
       </div>
-      <div *ngIf='!(datas.length === 0); else new'>
+    <div *ngIf='!(datas.length === 0); else new'>
       <ul class="list" *ngFor='let data of datas'>
         <li class="clearfix" (click)="changecomponent(data.uid,data.name)">
           <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
           <div class="about">
             <div class="name">{{data.name}}</div>
-            <div class="status">
-              <i class="fa fa-circle online"></i> online
+            <div *ngFor='let n of onlineusers'>
+            <div class="status" *ngIf='data.uid===n.user'>
+              <i class="fa fa-circle online inline"></i>Online
             </div>
+            <!-- <div class="status">
+              <i class="fa fa-circle online inline"  *ngIf='data.uid===n.user' ></i> <div class="inline" *ngIf='data.uid===n.user'>Online</div>
+              <i class="fa fa-circle offline"></i> offline
+            </div> -->
+          </div>
           </div>
         </li>
       </ul>
@@ -36,7 +42,7 @@
       
       <div class="chat-about">
         <div class="chat-with">{{chatname}}</div>
-        <!-- <div class="chat-num-messages">already 1 902 messages</div> -->
+        <div>typing....</div>
       </div>
       <i class="fa fa-star"></i>
     </div> <!-- end chat-header -->
@@ -44,21 +50,21 @@
     <div class="chat-history">
   
       <ul *ngFor='let message of newmessagearray'>
-        <li class="clearfix" *ngIf='message.fordatabase===localdata.uid && message.room===currentroom'>
+        <li class="clearfix" *ngIf='message.sendbyuid===localdata.uid && message.room===currentroom'>
           <div class="message-data align-right">
-            <span class="message-data-time" >{{message.date}}</span> &nbsp; &nbsp;
+            <span class="message-data-time" >{{message.date}}</span> &nbsp;
             <span class="message-data-name" >{{message.sendby}}</span> 
-            <!-- <span class="message-data-name">{{currentroom}}</span> -->
           </div>
           <div class="message other-message float-right">
            {{message.message}}
           </div>
         </li>
          
-        <li *ngIf='message.fordatabase!==localdata.uid'>
+        <li *ngIf='message.sendbyuid!==localdata.uid && message.room===currentroom'>
           <div class="message-data">
+            <span class="message-data-time">{{message.sendby}}</span> &nbsp;
             <span class="message-data-name">{{message.date}}</span>
-            <span class="message-data-time">{{message.sendby}}</span>
+           
           </div>
           <div class="message my-message">
             {{message.message}}
@@ -74,11 +80,10 @@
       <!-- <i class="fa fa-file-image-o"></i> -->
       
       <button (click)="messagesend(messagevalue)">Send</button>
-
     </div> <!-- end chat-message -->
     
   
-
+    
 
   </div>
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+declare const $: any;
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -41,11 +42,35 @@ export class ChatComponent implements OnInit {
     });
     console.log(this.datas);
     const socket = io('http://localhost:8000');
-    // socket.emit('startconnnection', { connencted: this.localdata.uid });
+    socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', data => {
       console.log(data.online);
-      // this.datas = data.online;
+      console.log(data.online.length);
+      // console.log(this.datas)
+      const a = data.online.length;
+      // const b = this.datas.length;
+
+      // for (let  i = 0 ; i < data.online.length; i++) {
+      // for (let  j = 0 ; j < this.datas.length; j++) {
+      //   console.log(this.datas[j].uid);
+      //   console.log(data.online[i].user)
+      //   if (data.online[i].user === this.datas[j].uid){
+      //   console.log('yes');
+      //   }
+      //   }
+      // }
       this.onlineusers = data.online;
+      // this.onlineusers.filter( m => m.user)
+      // console.log(this.onlineusers[0].user);
+      // console.log(this.datas[0].uid);
+      // for (const a of this.onlineusers) {
+      //   for (const b of this.datas) {
+      //     if (a.user === b.uid) {
+      //       console.log('yes');
+      //     }
+      //   }
+      // }
+
     });
     // for (const [i, v] of this.datas.entries()) {
     //   for (const [j, w] of this.onlineusers.entries()) {
@@ -65,6 +90,13 @@ export class ChatComponent implements OnInit {
     socket.on('chat message', data => {
     console.log(data);
     });
+
+
+    // $(document).ready(() => {
+      // $().click(() => {
+          // $('.chat-history').scrollTop($(document).height());
+      // });
+  // });
   }
   changecomponent(id, name) {
     const socket = io('http://localhost:8000');
@@ -109,12 +141,24 @@ export class ChatComponent implements OnInit {
     socket.emit('new', { me: this.localdata.uid,
       to: id
     });
+    socket.on('room is', data => {
+      const obj = {
+        room : data
+      };
+      this.api.getmessages(obj).subscribe((res: any) => {
+        console.log(res);
+        for (const message of res) {
+          this.newmessagearray.push(message);
+        }
+      });
+    });
   }
     socket.on('room is', data => {
-      console.log(data);
+      // console.log(data);
       this.chatroom.push(data);
       this.currentroom = data;
       console.log(this.currentroom);
+
       // socket.emit(data, {
         // fordatabase: this.localdata.uid,
         // sendby: this.localdata.displayName,
@@ -123,6 +167,7 @@ export class ChatComponent implements OnInit {
         // to: this.messagesendid,
         // message: 'hello i m ' + this.localdata.displayName});
     });
+
     socket.on('welcome message', data => {
       console.log(data);
       // if (data.room === this.currentroom) {
@@ -143,6 +188,7 @@ export class ChatComponent implements OnInit {
     const d = new Date();
     const h = d.getHours();
     const m = d.getMinutes();
+    const s = d.getSeconds();
     // console.log(date.toString());
     // console.log(text.value);
     const socket = io('http://localhost:8000');
@@ -154,10 +200,10 @@ export class ChatComponent implements OnInit {
       socket.emit(data, {
         room: data,
         message: text.value,
-        fordatabase: this.localdata.uid,
+        sendbyuid: this.localdata.uid,
         sendby: this.localdata.displayName,
         internationaldate: date.toString(),
-        date: `${h}:${m}`,
+        date: `${h}:${m}:${s}`,
         to: this.messagesendid
       });
     });

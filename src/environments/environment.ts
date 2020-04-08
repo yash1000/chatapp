@@ -37,5 +37,6 @@ export const appinfo = {
     getfriends: 'getfriends',
     reject: 'reject',
     removefriend: 'removefriend',
+    getmessages: 'getmessages',
   }
 };

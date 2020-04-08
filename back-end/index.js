@@ -24,7 +24,7 @@ var config = {
 
 const formidable = require('formidable');
 const form = formidable({ multiples: true });
-firebas.initializeApp(config);
+// firebas.initializeApp(config);
 // var storage = firebase.storage().bucket();
 // const {Storage} = require('@google-cloud/storage');
 // var storages = firebase.storage();
@@ -64,79 +64,116 @@ io.on('connection', function (socket) {
   
   
     // });
-  socket.on('new' , (data) => {
-    const availableRooms = [];
-      console.log(data)
-      console.log(io.sockets.adapter.rooms)
-      const rooms = io.sockets.adapter.rooms;
-      if (rooms) {
-        for (var roomr in rooms) {
-            if (!rooms[roomr].hasOwnProperty(roomr)) {
-                availableRooms.push(roomr);
-            }
-        }
-    }
-    for(var i=0;i<availableRooms.length;i++){
-    console.log(availableRooms[i])
-    }
-    var a = data.to+data.me;
-    var b =data.me+data.to;
-    var c =availableRooms.includes(a);
-    var d =availableRooms.includes(b)
-    if(c || d){
-      console.log("YES");
-      console.log(c);
-      if(c === true){
-        console.log("in c")
-        const e = availableRooms.find(d => d === a)
-        console.log("============")
-        console.log(e);
-        socket.join(e);
-        socket.emit('room is', e);
-        console.log(`joined ${e}`)
-        // io.sockets.in(e).emit('chat message', "asasas");
-        socket.on(e, data => {
-          console.log(data);
-          io.sockets.in(e).emit('welcome message', data);
-        });
-      }
-      if(d === true){
-        console.log("in d")
-        const f = availableRooms.find(d => d === b)
-        console.log("++++++++")
-        console.log(f);
-        socket.join(f);
-        socket.emit('room is', f);
-        console.log(`joined ${f}`)
-        // io.sockets.in(f).emit('chat message', "asasas");
-        socket.on(f, data => {
-          console.log(data);
-          io.sockets.in(f).emit('welcome message', data);
-        });
-      }
-      
-    } else {
-      const room = data.me+data.to;
+  socket.on('new', (data) => {
+    // const availableRooms = [];
+    // console.log(data)
+    // console.log(io.sockets.adapter.rooms)
+    // const rooms = io.sockets.adapter.rooms;
+    // if (rooms) {
+    //   for (var roomr in rooms) {
+    //     if (!rooms[roomr].hasOwnProperty(roomr)) {
+    //       availableRooms.push(roomr);
+    //     }
+    //   }
+    // }
+    // for (var i = 0; i < availableRooms.length; i++) {
+    //   console.log(availableRooms[i])
+    // }
+    // var a = data.to + data.me;
 
-      // var n = room.search(data.me);
-      // var m = room.search(data.to);
-      // if(n !== -1 || m !== -1){
-        socket.join(room);
-        socket.emit('room is', room);
-        console.log(`joined ${room}`)
-        // io.sockets.in(room).emit('chat message', "asasas");
-      // }
+
+    var ntotal = 0;
+    var mtotal = 0;
+    for (let i = 0; i < data.to.length; i++) {
+      var str = data.to;
+      ntotal += str.charCodeAt(i);
+    }
+    for (let i = 0; i < data.me.length; i++) {
+      var str = data.me;
+      mtotal += str.charCodeAt(i);
+    }
+    if (ntotal < mtotal) {
+      console.log("yes")
+      const room = data.me + data.to;
+      socket.join(room);
+      socket.emit('room is', room);
+      console.log(`joined ${room}`)
       socket.on(room, data => {
-        console.log(data);
         io.sockets.in(room).emit('welcome message', data);
+        db.collection('chat').doc(room).collection('message').add(data).then(() => {console.log("addes")})
+      });
+    } else if (mtotal < ntotal) {
+      const room = data.to + data.me;
+      socket.join(room);
+      socket.emit('room is', room);
+      console.log(`joined ${room}`)
+
+      socket.on(room, data => {
+        io.sockets.in(room).emit('welcome message', data);
+        db.collection('chat').doc(room).collection('message').add(data).then(() => {console.log("addes")})
       });
     }
 
-        // socket.on('new datas',data => {
-        //   console.log(data)
-          
-        // });
-    })
+    // var b =data.me+data.to;
+    // var c =availableRooms.includes(a);
+    // var d =availableRooms.includes(b)
+    // if(c || d){
+    //   console.log("YES");
+    //   console.log(c);
+    //   if(c === true){
+    //     console.log("in c")
+    //     const e = availableRooms.find(d => d === a)
+    //     console.log("============")
+    //     console.log(e);
+    //     socket.join(e);
+    //     socket.emit('room is', e);
+    //     console.log(`joined ${e}`)
+    //     // io.sockets.in(e).emit('chat message', "asasas");
+    //     socket.on(e, data => {
+    //       console.log(data);
+    //       io.sockets.in(e).emit('welcome message', data);
+    //     });
+    //   }
+    //   if(d === true){
+    //     console.log("in d")
+    //     const f = availableRooms.find(d => d === b)
+    //     console.log("++++++++")
+    //     console.log(f);
+    //     socket.join(f);
+    //     socket.emit('room is', f);
+    //     console.log(`joined ${f}`)
+    //     // io.sockets.in(f).emit('chat message', "asasas");
+    //     socket.on(f, data => {
+    //       console.log(data);
+    //       io.sockets.in(f).emit('welcome message', data);
+    //       db.collection('chat').add(data).then(() => {console.log("added")})
+    //     });
+    //   }
+
+    // } else {
+    //   const room = data.me+data.to;
+
+    //   // var n = room.search(data.me);
+    //   // var m = room.search(data.to);
+    //   // if(n !== -1 || m !== -1){
+    //     socket.join(room);
+    //     socket.emit('room is', room);
+    //     console.log(`joined ${room}`)
+    //     // io.sockets.in(room).emit('chat message', "asasas");
+    //   // }
+    //   socket.on(room, data => {
+    //     console.log("ppppppppppppp")
+    //     console.log(data);
+    //     io.sockets.in(room).emit('welcome message', data);
+    //     db.collection('chat').add(data).then(() => {console.log("added")})
+    //   });
+    // }
+
+    // socket.on('new datas',data => {
+    //   console.log(data)
+
+    // });
+  })
 
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
@@ -156,7 +193,15 @@ io.on('connection', function (socket) {
     io.emit('online users', {
       online: arrayforconnected
     })
-
+    const nsp = io.of('/chat');
+    nsp.on('connection', function(socket){
+      console.log("op")
+      console.log(arrayforconnected);
+      nsp.emit('online users', {
+        online:arrayforconnected
+      });
+    });
+    
   })
   socket.on('chat', function (data) {
     console.log(data);
@@ -189,6 +234,7 @@ io.on('connection', function (socket) {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+      console.log("oh hllo")
       console.log(getname);
       const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
       db.collection("users")
@@ -210,6 +256,7 @@ io.on('connection', function (socket) {
           email: datas.data().Emailid
         }
         console.log(newarray)
+        console.log(getname)
         io.sockets.connected[getname.socketid].emit("accept message", newarray);
       }).catch(err => {
         console.log(err)
@@ -518,8 +565,38 @@ app.post('/removefriend', (req, res) => {
     }).catch(err => {
       console.log(err)
     });
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.from);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === req.body.from);
+           console.log(getname)
+           console.log(req.body.from);
+           db.collection('users').doc(req.body.from).get().then(datas => {
+             console.log("ooooooooooooo")
+             console.log(datas.data())
+             const newobj = {
+               id:req.body.from,
+               displayName:datas.data().displayName,
+               Emailid:datas.data().Emailid
+             }
+             io.sockets.connected[getname.socketid].emit("userafterremove", newobj);
+             console.log("emitted")
+           })
+    }
 })
+//  arrayofmessage = [];
+app.post('/getmessages',(req,res) => {
+  const arrayofmessage = [];
+  console.log(req.body);
+  db.collection('chat').doc(req.body.room).collection('message').orderBy('date').get().then((data) => {
+    data.forEach(doc => {
+      console.log(doc.data());
+      arrayofmessage.push(doc.data())
+    })
+    res.send(arrayofmessage);
 
+  })
+  
+})
 
 
 

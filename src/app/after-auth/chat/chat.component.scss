@@ -144,7 +144,7 @@ height: 88vh;
     }
     
     .message-data-time {
-      color: lighten($gray, 8%);
+      // color: lighten($gray, 8%);
       padding-left: 6px;
     }
     
@@ -234,7 +234,9 @@ height: 88vh;
 .online {
   color: $green;
 }
-  
+.inline{
+  display: inline-block;
+}
 .offline {
   color: $orange;
 }

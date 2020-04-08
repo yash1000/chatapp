@@ -9,7 +9,7 @@ import { NgxUiLoaderService } from 'ngx-ui-loader';
   styleUrls: ['./users.component.scss']
 })
 export class UsersComponent implements OnInit {
-  data: any;
+  data = [];
   localdata: any;
   uid: any;
   newrequest: any;
@@ -29,7 +29,8 @@ export class UsersComponent implements OnInit {
       console.log(data);
       const getname = data.findIndex(data => data.id === local.uid);
       data.splice(getname, 1);
-      this.data = data;
+      for(let i=0;i<data.length;i++){
+      this.data.push(data[i]);}
       console.log(this.data);
     });
     this.api.getrequestlist(this.uid).subscribe((data: any) => {
@@ -47,6 +48,10 @@ export class UsersComponent implements OnInit {
     console.log(data);
     $(`#abc${data}`).prop('disabled', false);
     console.log(`${data}`);
+    });
+    socket.on('userafterremove', data => {
+      console.log(data);
+      this.data.push(data);
     });
   }
 
