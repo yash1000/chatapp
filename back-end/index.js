@@ -3,32 +3,30 @@ const admin = require('firebase-admin')
 var firebase = require('firebase-admin');
 var key = require('./key')
 firebase.initializeApp(key);
+
 const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
+// const gcloud = require('@google-cloud/storage')
+const Multer = require('multer');
+const googleStorage = require('@google-cloud/storage');
+firebas.initializeApp(key);
+// const storage = googleStorage({projectId: "chatpp-da297",keyFilename: "./key"});
+// gcloud.Storage()
 // var gcloud = require('gcloud');
 // const gcloud = require('google-cloud')
 // var gcloud = require('gcloud')({ ... }); var gcs = gcloud.storage();
 // var bucket = gcs.bucket('<your-firebase-storage-bucket>');
-var config = {
-  apiKey: "AIzaSyDjCZoHVr6BMiQMS-uO9U5fN6gcp0mPWqM",
-  authDomain: "chatpp-da297.firebaseapp.com",
-  databaseURL: "https://chatpp-da297.firebaseio.com",
-  projectId: "chatpp-da297",
-  storageBucket: "chatpp-da297.appspot.com",
-  messagingSenderId: "956935763818",
-  appId: "1:956935763818:web:ae9d71ac0e67ebb3ab9713",
-  measurementId: "G-KKVNKKNV10"
-};
-
+// const ref = firebase.storage().ref();
 const formidable = require('formidable');
 const form = formidable({ multiples: true });
 // firebas.initializeApp(config);
 // var storage = firebase.storage().bucket();
 // const {Storage} = require('@google-cloud/storage');
-// var storages = firebase.storage();
-// var storageRef = storages.bucket("my-bucket")
+// var storages = firebas.storage().ref;
+// let storageRef = firebas.storage().ref();
+// var storageRef = storages.bucket('gs://chatpp-da297.appspot.com')
 // const storage = new Storage();
 
 
@@ -43,9 +41,77 @@ app.use(bodyparser.urlencoded({
   extended: true
 }))
 
+
+
+
+
+app.post('/registration', (req, res) => {
+  console.log(req.body);
+   
+  form.parse(req, (err, fields, files) => {
+    if (err) {
+      next(err);
+      return;
+    }
+    console.log(fields)
+    console.log(files)
+    // var storageRef = firebas.storage().ref();
+  });
+  // });
+
+  // firebas.auth().createUserWithEmailAndPassword(req.body.Emailid, req.body.password).then(data => {
+
+  //   db.collection('users').add(req.body).then(() => {
+  //     console.log("oh yeh")
+  //     firebas.auth().currentUser.getIdToken().then(function (idToken) {
+  //       console.log(idToken)
+  //       res.json({
+  //         message: "successfully resgisterd"
+  //       })
+  //     }).catch(function (error) {
+  //       console.log(error)
+  //     });
+  //   }).catch(err => {
+  //     console.log("oh no")
+  //     console.log(err);
+  //   })
+  // }).catch(err => {
+  //   if (err.message == "The email address is already in use by another account.") {
+  //     res.json({
+  //       message: "already exist"
+  //     })
+  //   }
+  // })
+})
+
+
+
+
+
+
+
+
+
+
 var arrayforconnected = [];
 io.on('connection', function (socket) {
 
+  socket.on('id', (data) => {
+    console.log(data);
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.id);
+    if (getFruit !== -1) {
+      arrayforconnected.splice(getFruit, 1);
+      console.log(arrayforconnected)
+      io.emit('online users', {
+        online: arrayforconnected
+      })
+    }
+  })
+  socket.on('disconnect', function(data){
+    console.log(data);
+    socket.disconnect();
+    console.log(arrayforconnected)
+});
     // socket.on('create', function(room) {
     //   socket.join(room);
     //   console.log(room)
@@ -64,6 +130,7 @@ io.on('connection', function (socket) {
   
   
     // });
+
   socket.on('new', (data) => {
     // const availableRooms = [];
     // console.log(data)
@@ -422,64 +489,6 @@ app.post('/login', (req, res) => {
     }
   });
 })
-
-
-app.post('/registration', (req, res) => {
-  console.log(req.body);
-   
-  // form.parse(req, (err, fields, files) => {
-  //   if (err) {
-  //     next(err);
-  //     return;
-  //   }
-  //   console.log(fields)
-  //   console.log(files)
-  //   // ({ fields, files });
-  //   var storageRef = firebas.storage().ref();
-
-  //   var uploadTask = storageRef.child('images/octofez.png').put(files);
-    
-  //   // Register three observers:
-  //   // 1. 'state_changed' observer, called any time the state changes
-  //   // 2. Error observer, called on failure
-  //   // 3. Completion observer, called on successful completion
-  //   uploadTask.on('state_changed', function(snapshot){
-  //   }, function(error) {
-  //       console.error("Something nasty happened", error);
-  //   }, function() {
-  //     var downloadURL = uploadTask.snapshot.downloadURL;
-  //     console.log("Done. Enjoy.", downloadURL);
-  //   });
-  //   console.log(`${files} uploaded to ${'my-bucket'}.`);
-  // });
-  // });
-
-  firebas.auth().createUserWithEmailAndPassword(req.body.Emailid, req.body.password).then(data => {
-
-    db.collection('users').add(req.body).then(() => {
-      console.log("oh yeh")
-      firebas.auth().currentUser.getIdToken().then(function (idToken) {
-        console.log(idToken)
-        res.json({
-          message: "successfully resgisterd"
-        })
-      }).catch(function (error) {
-        console.log(error)
-      });
-    }).catch(err => {
-      console.log("oh no")
-      console.log(err);
-    })
-  }).catch(err => {
-    if (err.message == "The email address is already in use by another account.") {
-      res.json({
-        message: "already exist"
-      })
-    }
-  })
-})
-
-
 
 app.post('/allusers', (req, res) => {
   console.log(req.body)

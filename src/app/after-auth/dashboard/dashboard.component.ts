@@ -23,8 +23,12 @@ export class DashboardComponent implements OnInit {
     console.log(this.localdata.uid);
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
-//     const socket = io('http://localhost:8000');
-//     socket.emit('startconnnection', { connencted: this.localdata.uid });
+    // const socket = io('http://localhost:8000');
+    // socket.emit('startconnnection', { connencted: this.localdata.uid });
+    // socket.on('accept message', data => {
+    //   console.log(data);
+    //   this.datas.push(data);
+    // });
 //     // socket.to('room1').emit('event', 'helo');
 //     socket.on('online users', data => {
 //       console.log(data.online);

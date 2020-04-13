@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
+import * as io from 'socket.io-client';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -10,18 +11,28 @@ export class HeaderComponent implements OnInit {
   displayname: any;
   uid: any;
 
-  constructor() { }
+  constructor( private routes: Router) { }
 
   ngOnInit() {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     console.log(this.localdata.uid);
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
+    const socket = io('http://localhost:8000');
+    // socket.emit('startconnnection', { connencted: this.localdata.uid });
   }
-  openNav() {
-    document.getElementById('mySidenav').style.width = '250px';
-  }
-  closeNav() {
-    document.getElementById('mySidenav').style.width = '0';
+
+  // openNav() {
+  //   document.getElementById('mySidenav').style.width = '250px';
+  // }
+  // closeNav() {
+  //   document.getElementById('mySidenav').style.width = '0';
+  // }
+  logout() {
+    const socket = io('http://localhost:8000');
+    socket.emit('id', {id: this.localdata.uid});
+    socket.emit('disconnect');
+    localStorage.removeItem('accessToken');
+    this.routes.navigate(['/login']);
   }
 }
