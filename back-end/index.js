@@ -559,7 +559,38 @@ app.post('/getfriends', (req, res) => {
 
 app.post('/removefriend', (req, res) => {
   console.log(req.body)
-  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  
+  var ntotal = 0;
+  var mtotal = 0;
+  for (let i = 0; i < req.body.from.length; i++) {
+    var str = req.body.from;
+    ntotal += str.charCodeAt(i);
+  }
+  for (let i = 0; i < req.body.local.length; i++) {
+    var str = req.body.local;
+    mtotal += str.charCodeAt(i);
+  }
+  if (ntotal < mtotal) {
+const room =req.body.local+req.body.from;
+console.log('room is'+ room);
+db.collection('chat').doc(room).collection('message').listDocuments().then((data) => {
+  data.map((data) => {
+    data.delete();
+  })
+  console.log("deleted")
+})
+  }
+  else{
+    const room1 = req.body.from+req.body.local;
+    console.log('room1 is'+room1);
+    db.collection('chat').doc(room1).collection('message').listDocuments().then((data) => {
+      data.map((data) => {
+        data.delete();
+      })
+      console.log("deleted")
+    })
+  }
+ const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
   db.collection("users")
     .doc(req.body.local)
     .update({
