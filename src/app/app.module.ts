@@ -11,6 +11,7 @@ import { RegistrationComponent } from './pre-auth/registration/registration.comp
 import { AuthGuard } from './services/authService.service';
 // import { NgHttpLoaderModule } from 'ng-http-loader'; 
 // import { NgHttpLoaderModule } from 'ng-http-loader';
+import * as $ from 'jquery';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { SecurePage } from './services/protected.service';
 import { ChatComponent } from './after-auth/chat/chat.component';

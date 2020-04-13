@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 declare const $: any;
 @Component({
   selector: 'app-chat',
@@ -18,6 +19,7 @@ export class ChatComponent implements OnInit {
   newmessagearray = [];
   chatroom = [];
   currentroom: any;
+  typing: any;
 
   constructor( private api: ApiCalls) { }
 
@@ -97,6 +99,14 @@ export class ChatComponent implements OnInit {
           // $('.chat-history').scrollTop($(document).height());
       // });
   // });
+    socket.on('totyping', data => {
+  //  console.log(data);
+   this.typing = data;
+  });
+    socket.on('stoptyping', data => {
+    // console.log(data);
+    this.typing = data;
+   });
   }
   changecomponent(id, name) {
     const socket = io('http://localhost:8000');
@@ -207,6 +217,21 @@ export class ChatComponent implements OnInit {
         to: this.messagesendid
       });
     });
+  }
+  myFunction(e) {
+    const socket = io('http://localhost:8000');
+    console.log('typing');
+    console.log(e.value);
+    if (e.value !== '') {
+      console.log('yes');
+      socket.emit('typing', { me: this.localdata.uid,
+        to: this.messagesendid
+      });
+    } else {
+      socket.emit('stop typing', { me: this.localdata.uid,
+        to: this.messagesendid
+      });
+    }
   }
 }
 

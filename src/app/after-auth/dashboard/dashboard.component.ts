@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-dashboard',
@@ -71,11 +72,18 @@ export class DashboardComponent implements OnInit {
 // //    console.log('Incoming message:', data);
 // // });
 
+// tslint:disable-next-line: align
+// $(document).ready(function(){
 
 
 
   }
-
+  clicks(e) {
+    console.log('clicks');
+    const x = document.getElementsByClassName('a');
+    console.log(e);
+    $(this).hide();
+}
 //   socket(input) {
 //     // console.log(input.value);
 //     // const socket = io('http://localhost:8000');

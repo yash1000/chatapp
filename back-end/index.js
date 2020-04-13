@@ -8,7 +8,6 @@ const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
-// const gcloud = require('@google-cloud/storage')
 const Multer = require('multer');
 const googleStorage = require('@google-cloud/storage');
 firebas.initializeApp(key);
@@ -130,7 +129,24 @@ io.on('connection', function (socket) {
   
   
     // });
-
+    socket.on('typing', (data) => {
+      console.log(data);
+      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+      if (getFruit !== -1) {
+        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+        console.log(getname);
+        io.sockets.connected[getname.socketid].emit("totyping", 'typing');
+      }
+    })
+    socket.on('stop typing', (data) => {
+      console.log(data);
+      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+      if (getFruit !== -1) {
+        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+        console.log(getname);
+        io.sockets.connected[getname.socketid].emit("stoptyping", 'stop typing');
+      }
+    })
   socket.on('new', (data) => {
     // const availableRooms = [];
     // console.log(data)
