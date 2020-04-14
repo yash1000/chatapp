@@ -3,32 +3,17 @@ const admin = require('firebase-admin')
 var firebase = require('firebase-admin');
 var key = require('./key')
 firebase.initializeApp(key);
-
 const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
-const Multer = require('multer');
-const googleStorage = require('@google-cloud/storage');
+var defaultStorage = admin.storage();
+var a = defaultStorage.bucket().storage;
+const projectId = "chatpp-da297";
 firebas.initializeApp(key);
-// const storage = googleStorage({projectId: "chatpp-da297",keyFilename: "./key"});
-// gcloud.Storage()
-// var gcloud = require('gcloud');
-// const gcloud = require('google-cloud')
-// var gcloud = require('gcloud')({ ... }); var gcs = gcloud.storage();
-// var bucket = gcs.bucket('<your-firebase-storage-bucket>');
-// const ref = firebase.storage().ref();
-const formidable = require('formidable');
-const form = formidable({ multiples: true });
-// firebas.initializeApp(config);
-// var storage = firebase.storage().bucket();
-// const {Storage} = require('@google-cloud/storage');
-// var storages = firebas.storage().ref;
-// let storageRef = firebas.storage().ref();
-// var storageRef = storages.bucket('gs://chatpp-da297.appspot.com')
-// const storage = new Storage();
-
-
+const multer = require('multer');
+app.use(express.static('public'));
+app.use('/images', express.static(__dirname + '/public/upload'));
 app.use(bodyparser.json());
 const cors = require('cors');
 var http = require('http').createServer(app);
@@ -39,58 +24,84 @@ app.use(cors({
 app.use(bodyparser.urlencoded({
   extended: true
 }))
+const path = require('path');
+app.use(express.static('public'));
 
+
+function checkfiletype(file, cb) {
+  const filetype = /jpeg|jpg|png|gif/;
+  const extname = filetype.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetype.test(file.mimetype);
+  if (mimetype && extname) {
+    return cb(null, true)
+  } else {
+    cb('ERROR:images only');
+  }
+}
+
+
+//multer storage method
+const storage = multer.diskStorage({
+  destination: './public/upload',
+  filename: function (req, file, cb) {
+    console.log('yessss')
+    console.log(file);
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  }
+})
+
+
+//init upload for multer
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 10000000
+  },
+  fileFilter: function (req, file, cb) {
+    console.log(file),
+      checkfiletype(file, cb);
+  }
+}).single('uploadfile')
 
 
 
 
 app.post('/registration', (req, res) => {
   console.log(req.body);
-   
-  form.parse(req, (err, fields, files) => {
-    if (err) {
-      next(err);
-      return;
-    }
-    console.log(fields)
-    console.log(files)
-    // var storageRef = firebas.storage().ref();
-  });
-  // });
+  upload(req, res, (err) => {
+    console.log('pp')
+    console.log(req.file);
+    var emp = ({
+      displayName: req.body.displayName,
+      Emailid: req.body.Emailid,
+      password: req.body.password,
+      filename: req.file.filename,
+    });
+    firebas.auth().createUserWithEmailAndPassword(emp.Emailid, emp.password).then(data => {
 
-  // firebas.auth().createUserWithEmailAndPassword(req.body.Emailid, req.body.password).then(data => {
-
-  //   db.collection('users').add(req.body).then(() => {
-  //     console.log("oh yeh")
-  //     firebas.auth().currentUser.getIdToken().then(function (idToken) {
-  //       console.log(idToken)
-  //       res.json({
-  //         message: "successfully resgisterd"
-  //       })
-  //     }).catch(function (error) {
-  //       console.log(error)
-  //     });
-  //   }).catch(err => {
-  //     console.log("oh no")
-  //     console.log(err);
-  //   })
-  // }).catch(err => {
-  //   if (err.message == "The email address is already in use by another account.") {
-  //     res.json({
-  //       message: "already exist"
-  //     })
-  //   }
-  // })
+      db.collection('users').add(emp).then(() => {
+        console.log("oh yeh")
+        firebas.auth().currentUser.getIdToken().then(function (idToken) {
+          console.log(idToken)
+          res.json({
+            message: "successfully resgisterd"
+          })
+        }).catch(function (error) {
+          console.log(error)
+        });
+      }).catch(err => {
+        console.log("oh no")
+        console.log(err);
+      })
+    }).catch(err => {
+      if (err.message == "The email address is already in use by another account.") {
+        res.json({
+          message: "already exist"
+        })
+      }
+    })
+  })
 })
-
-
-
-
-
-
-
-
-
 
 var arrayforconnected = [];
 io.on('connection', function (socket) {
@@ -106,65 +117,26 @@ io.on('connection', function (socket) {
       })
     }
   })
-  socket.on('disconnect', function(data){
+  socket.on('disconnect', function (data) {
     console.log(data);
     socket.disconnect();
     console.log(arrayforconnected)
-});
-    // socket.on('create', function(room) {
-    //   socket.join(room);
-    //   console.log(room)
-    //   io.sockets.in(room).emit('chat message', "asasas");
-    //   socket.on(room, data => {
-    //     console.log("000000000000000000000")
-    //     console.log(data)
-    //     socket.to(room).emit('new data',`data is ${data.message};
-    //     send from ${data.from}
-    //     send to ${room}`);
-    //     // socket.on('new datas',data => {
-    //     //   console.log(data)
-          
-    //     // });
-    //   });
-  
-  
-    // });
-    socket.on('typing', (data) => {
-      console.log(data);
-      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-      if (getFruit !== -1) {
-        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-        console.log(getname);
-        io.sockets.connected[getname.socketid].emit("totyping", 'typing');
-      }
-    })
-    socket.on('stop typing', (data) => {
-      console.log(data);
-      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-      if (getFruit !== -1) {
-        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-        console.log(getname);
-        io.sockets.connected[getname.socketid].emit("stoptyping", 'stop typing');
-      }
-    })
+  });
+  socket.on('typing', (data) => {
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+      io.sockets.connected[getname.socketid].emit("totyping", 'typing');
+    }
+  })
+  socket.on('stop typing', (data) => {
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
+      io.sockets.connected[getname.socketid].emit("stoptyping", 'stop typing');
+    }
+  })
   socket.on('new', (data) => {
-    // const availableRooms = [];
-    // console.log(data)
-    // console.log(io.sockets.adapter.rooms)
-    // const rooms = io.sockets.adapter.rooms;
-    // if (rooms) {
-    //   for (var roomr in rooms) {
-    //     if (!rooms[roomr].hasOwnProperty(roomr)) {
-    //       availableRooms.push(roomr);
-    //     }
-    //   }
-    // }
-    // for (var i = 0; i < availableRooms.length; i++) {
-    //   console.log(availableRooms[i])
-    // }
-    // var a = data.to + data.me;
-
-
     var ntotal = 0;
     var mtotal = 0;
     for (let i = 0; i < data.to.length; i++) {
@@ -183,7 +155,9 @@ io.on('connection', function (socket) {
       console.log(`joined ${room}`)
       socket.on(room, data => {
         io.sockets.in(room).emit('welcome message', data);
-        db.collection('chat').doc(room).collection('message').add(data).then(() => {console.log("addes")})
+        db.collection('chat').doc(room).collection('message').add(data).then(() => {
+          console.log("addes")
+        })
       });
     } else if (mtotal < ntotal) {
       const room = data.to + data.me;
@@ -193,69 +167,11 @@ io.on('connection', function (socket) {
 
       socket.on(room, data => {
         io.sockets.in(room).emit('welcome message', data);
-        db.collection('chat').doc(room).collection('message').add(data).then(() => {console.log("addes")})
+        db.collection('chat').doc(room).collection('message').add(data).then(() => {
+          console.log("addes")
+        })
       });
     }
-
-    // var b =data.me+data.to;
-    // var c =availableRooms.includes(a);
-    // var d =availableRooms.includes(b)
-    // if(c || d){
-    //   console.log("YES");
-    //   console.log(c);
-    //   if(c === true){
-    //     console.log("in c")
-    //     const e = availableRooms.find(d => d === a)
-    //     console.log("============")
-    //     console.log(e);
-    //     socket.join(e);
-    //     socket.emit('room is', e);
-    //     console.log(`joined ${e}`)
-    //     // io.sockets.in(e).emit('chat message', "asasas");
-    //     socket.on(e, data => {
-    //       console.log(data);
-    //       io.sockets.in(e).emit('welcome message', data);
-    //     });
-    //   }
-    //   if(d === true){
-    //     console.log("in d")
-    //     const f = availableRooms.find(d => d === b)
-    //     console.log("++++++++")
-    //     console.log(f);
-    //     socket.join(f);
-    //     socket.emit('room is', f);
-    //     console.log(`joined ${f}`)
-    //     // io.sockets.in(f).emit('chat message', "asasas");
-    //     socket.on(f, data => {
-    //       console.log(data);
-    //       io.sockets.in(f).emit('welcome message', data);
-    //       db.collection('chat').add(data).then(() => {console.log("added")})
-    //     });
-    //   }
-
-    // } else {
-    //   const room = data.me+data.to;
-
-    //   // var n = room.search(data.me);
-    //   // var m = room.search(data.to);
-    //   // if(n !== -1 || m !== -1){
-    //     socket.join(room);
-    //     socket.emit('room is', room);
-    //     console.log(`joined ${room}`)
-    //     // io.sockets.in(room).emit('chat message', "asasas");
-    //   // }
-    //   socket.on(room, data => {
-    //     console.log("ppppppppppppp")
-    //     console.log(data);
-    //     io.sockets.in(room).emit('welcome message', data);
-    //     db.collection('chat').add(data).then(() => {console.log("added")})
-    //   });
-    // }
-
-    // socket.on('new datas',data => {
-    //   console.log(data)
-
-    // });
   })
 
   socket.on('startconnnection', function (data) {
@@ -277,14 +193,14 @@ io.on('connection', function (socket) {
       online: arrayforconnected
     })
     const nsp = io.of('/chat');
-    nsp.on('connection', function(socket){
+    nsp.on('connection', function (socket) {
       console.log("op")
       console.log(arrayforconnected);
       nsp.emit('online users', {
-        online:arrayforconnected
+        online: arrayforconnected
       });
     });
-    
+
   })
   socket.on('chat', function (data) {
     console.log(data);
@@ -392,7 +308,7 @@ io.on('connection', function (socket) {
       const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
       if (getFruit !== -1) {
         var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
-   
+
         io.sockets.connected[getname.socketid].emit("newfriend", newdata);
       }
     })
@@ -404,8 +320,8 @@ io.on('connection', function (socket) {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.from);
-           console.log(getname)
-           console.log(data.from);
+      console.log(getname)
+      console.log(data.from);
       io.sockets.connected[getname.socketid].emit("newbutton", data.to);
       console.log("emitted")
     }
@@ -476,6 +392,7 @@ app.post('/login', (req, res) => {
       db.collection("users").where("Emailid", "==", req.body.Emailid)
         .get()
         .then(function (querySnapshot) {
+          console.log(querySnapshot.docs)
           var b = querySnapshot.docs.find(d => d = {
             Emailid: req.body.Emailid
           });
@@ -489,6 +406,7 @@ app.post('/login', (req, res) => {
               uid: newid,
               token: token,
               displayName: c.displayName,
+              image: c.filename,
             }
           }))
           res.json(totalresponse)
@@ -509,22 +427,24 @@ app.post('/login', (req, res) => {
 app.post('/allusers', (req, res) => {
   console.log(req.body)
   db.collection('users').doc(req.body.uid).get().then(datas => {
-    console.log(datas.data().friendList);
-    var a = datas.data().friendList.length;
-    console.log(a);
     db.collection('users').get().then(data => {
       let screms = [];
-          data.forEach(doc => {
-              screms.push({
-                id: doc.id,
-                displayName: doc.data().displayName,
-                Emailid: doc.data().Emailid,
-              });
-          })
-          const response = screms.filter(n => !datas.data().friendList.some(n2 => n.id === n2));
-          console.log("on")
-          console.log(response)
-          res.send(response);
+      data.forEach(doc => {
+        screms.push({
+          id: doc.id,
+          displayName: doc.data().displayName,
+          Emailid: doc.data().Emailid,
+        });
+      })
+      if (datas.data().friendList === undefined) {
+        res.send(screms);
+      } else {
+        const response = screms.filter(n => !datas.data().friendList.some(n2 => n.id === n2));
+        res.send(response);
+      }
+      console.log("on")
+      // console.log(response)
+
     }).catch(err => console.log(err))
   }).catch(err => console.log(err))
 })
@@ -546,24 +466,24 @@ app.post('/getfriends', (req, res) => {
   db.collection('users').doc(req.body.id).get().then(data => {
     console.log(data.data().friendList.length);
     var newcount = data.data().friendList.length;
-    if(newcount===0) {
+    if (newcount === 0) {
       res.json("sorry you don't have friends");
-    }else{
-    for (let i = 0; i < newcount; i++) {
-      db.collection('users').doc(data.data().friendList[i]).get().then(data => {
-        const newdata = {
-          uid: data.id,
-          name: data.data().displayName,
-          email: data.data().Emailid
-        }
-        arrayoffriend.push(newdata);
-        if (arrayoffriend.length == newcount) {
-          console.log(arrayoffriend);
-          res.send(arrayoffriend);
-        }
-      })
+    } else {
+      for (let i = 0; i < newcount; i++) {
+        db.collection('users').doc(data.data().friendList[i]).get().then(data => {
+          const newdata = {
+            uid: data.id,
+            name: data.data().displayName,
+            email: data.data().Emailid
+          }
+          arrayoffriend.push(newdata);
+          if (arrayoffriend.length == newcount) {
+            console.log(arrayoffriend);
+            res.send(arrayoffriend);
+          }
+        })
+      }
     }
-  }
     arrayoffriend = [];
   }).catch(err => {
     console.log(err)
@@ -571,11 +491,9 @@ app.post('/getfriends', (req, res) => {
 });
 
 
-
-
 app.post('/removefriend', (req, res) => {
   console.log(req.body)
-  
+
   var ntotal = 0;
   var mtotal = 0;
   for (let i = 0; i < req.body.from.length; i++) {
@@ -587,18 +505,17 @@ app.post('/removefriend', (req, res) => {
     mtotal += str.charCodeAt(i);
   }
   if (ntotal < mtotal) {
-const room =req.body.local+req.body.from;
-console.log('room is'+ room);
-db.collection('chat').doc(room).collection('message').listDocuments().then((data) => {
-  data.map((data) => {
-    data.delete();
-  })
-  console.log("deleted")
-})
-  }
-  else{
-    const room1 = req.body.from+req.body.local;
-    console.log('room1 is'+room1);
+    const room = req.body.local + req.body.from;
+    console.log('room is' + room);
+    db.collection('chat').doc(room).collection('message').listDocuments().then((data) => {
+      data.map((data) => {
+        data.delete();
+      })
+      console.log("deleted")
+    })
+  } else {
+    const room1 = req.body.from + req.body.local;
+    console.log('room1 is' + room1);
     db.collection('chat').doc(room1).collection('message').listDocuments().then((data) => {
       data.map((data) => {
         data.delete();
@@ -606,7 +523,7 @@ db.collection('chat').doc(room).collection('message').listDocuments().then((data
       console.log("deleted")
     })
   }
- const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
+  const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
   db.collection("users")
     .doc(req.body.local)
     .update({
@@ -621,26 +538,27 @@ db.collection('chat').doc(room).collection('message').listDocuments().then((data
     }).catch(err => {
       console.log(err)
     });
-    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.from);
-    if (getFruit !== -1) {
-      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === req.body.from);
-           console.log(getname)
-           console.log(req.body.from);
-           db.collection('users').doc(req.body.from).get().then(datas => {
-             console.log("ooooooooooooo")
-             console.log(datas.data())
-             const newobj = {
-               id:req.body.from,
-               displayName:datas.data().displayName,
-               Emailid:datas.data().Emailid
-             }
-             io.sockets.connected[getname.socketid].emit("userafterremove", newobj);
-             console.log("emitted")
-           })
-    }
+  const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.from);
+  if (getFruit !== -1) {
+    var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === req.body.from);
+    console.log(getname)
+    console.log(req.body.from);
+    db.collection('users').doc(req.body.from).get().then(datas => {
+      console.log("ooooooooooooo")
+      console.log(datas.data())
+      const newobj = {
+        id: req.body.from,
+        displayName: datas.data().displayName,
+        Emailid: datas.data().Emailid
+      }
+      io.sockets.connected[getname.socketid].emit("userafterremove", newobj);
+      console.log("emitted")
+    })
+  }
 })
-//  arrayofmessage = [];
-app.post('/getmessages',(req,res) => {
+
+
+app.post('/getmessages', (req, res) => {
   const arrayofmessage = [];
   console.log(req.body);
   db.collection('chat').doc(req.body.room).collection('message').orderBy('date').get().then((data) => {
@@ -651,10 +569,8 @@ app.post('/getmessages',(req,res) => {
     res.send(arrayofmessage);
 
   })
-  
+
 })
-
-
 
 
 

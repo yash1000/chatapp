@@ -5,7 +5,6 @@ import { appinfo } from '../../environments/environment';
 export class ApiCalls {
   readonly baseurl = 'http://localhost:8000/';
   constructor(private https: HttpClient) {}
-  // @param emp will send all form values as object
   login(emp: any) {
     return this.https.post(this.baseurl + appinfo.info.login, emp);
   }

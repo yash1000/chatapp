@@ -10,12 +10,14 @@ export class HeaderComponent implements OnInit {
   localdata: any;
   displayname: any;
   uid: any;
+  img1: string;
 
   constructor( private routes: Router) { }
 
   ngOnInit() {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     console.log(this.localdata.uid);
+    this.img1 = 'http://localhost:8000/images/' + this.localdata.image;
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
     const socket = io('http://localhost:8000');

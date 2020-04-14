@@ -29,8 +29,9 @@ export class UsersComponent implements OnInit {
       console.log(data);
       const getname = data.findIndex(data => data.id === local.uid);
       data.splice(getname, 1);
-      for(let i=0;i<data.length;i++){
-      this.data.push(data[i]);}
+      // tslint:disable-next-line:prefer-for-of
+      for (let i = 0; i < data.length; i++) {
+      this.data.push(data[i]);  }
       console.log(this.data);
     });
     this.api.getrequestlist(this.uid).subscribe((data: any) => {
@@ -56,15 +57,7 @@ export class UsersComponent implements OnInit {
   }
 
   requestsend(id) {
-    // const socket = io('http://localhost:8000/request');
-    // console.log(id);
-    // socket.emit('chat', {
-    //   to: id,
-    //   from: this.uid,
-    //   message: 'friend request'
-    // });
     const socket = io('http://localhost:8000');
-    // socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.emit('request', {
       to: id,
       from: this.uid.uid,
@@ -74,22 +67,6 @@ export class UsersComponent implements OnInit {
       console.log(data);
       this.datas = data;
     });
-    // socket.on('buttondisable', data => {
-    //   console.log(data);
-    //   this.accept = data;
     $(`#abc${id}`).prop('disabled', true);
-    console.log(`${id}`);
-    // });
-
-    console.log(id);
-    // console.log(this.localdata);
-    // this.newrequest = {
-    //   from: this.localdata.uid,
-    //   to: id,
-    //   status: 1,
-    // };
-    // this.api.sendrequest(this.newrequest).subscribe((data) => {
-    //   console.log(data);
-    // });
   }
 }
