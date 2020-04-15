@@ -474,7 +474,8 @@ app.post('/getfriends', (req, res) => {
           const newdata = {
             uid: data.id,
             name: data.data().displayName,
-            email: data.data().Emailid
+            email: data.data().Emailid,
+            image: data.data().filename
           }
           arrayoffriend.push(newdata);
           if (arrayoffriend.length == newcount) {

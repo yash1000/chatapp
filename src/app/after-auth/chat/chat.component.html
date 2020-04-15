@@ -12,8 +12,8 @@
       </div>
     <div *ngIf='!(datas.length === 0); else new'>
       <ul class="list" *ngFor='let data of datas'>
-        <li class="clearfix" (click)="changecomponent(data.uid,data.name)">
-          <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01.jpg" alt="avatar" />
+        <li class="clearfix" (click)="changecomponent(data.uid,data.name,data.image)">
+          <img src='http://localhost:8000/images/{{data.image}}' alt="avatar" />
           <div class="about">
             <div class="name">{{data.name}}</div>
             <div *ngFor='let n of onlineusers'>
@@ -38,7 +38,7 @@
 
   
     <div class="chat-header clearfix">
-      <img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/195612/chat_avatar_01_green.jpg" alt="avatar" />
+      <img src="http://localhost:8000/images/{{img}}" alt="avatar" />
       
       <div class="chat-about">
         <div class="chat-with">{{chatname}}</div>

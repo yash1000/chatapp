@@ -19,6 +19,7 @@ export class ChatComponent implements OnInit {
   chatroom = [];
   currentroom: any;
   typing: any;
+  img: any;
 
   constructor(private api: ApiCalls) {}
 
@@ -63,10 +64,11 @@ export class ChatComponent implements OnInit {
       this.typing = data;
     });
   }
-  changecomponent(id, name) {
+  changecomponent(id, name, image) {
     const socket = io('http://localhost:8000');
     this.messagesendid = id;
     this.chatname = name;
+    this.img = image;
     const a = this.localdata.uid + id;
     const b = id + this.localdata.uid;
     const c = this.chatroom.includes(a);
@@ -101,7 +103,7 @@ export class ChatComponent implements OnInit {
     });
 
     socket.on('welcome message', (data) => {
-      console.log(data);
+      // console.log(data);
       this.newmessagearray.push(data);
     });
   }
