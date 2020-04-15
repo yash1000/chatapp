@@ -562,7 +562,7 @@ app.post('/removefriend', (req, res) => {
 app.post('/getmessages', (req, res) => {
   const arrayofmessage = [];
   console.log(req.body);
-  db.collection('chat').doc(req.body.room).collection('message').orderBy('date').get().then((data) => {
+  db.collection('chat').doc(req.body.room).collection('message').orderBy('internationaldate').get().then((data) => {
     data.forEach(doc => {
       console.log(doc.data());
       arrayofmessage.push(doc.data())
