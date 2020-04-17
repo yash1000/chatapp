@@ -154,21 +154,6 @@ io.on('connection', function (socket) {
       mtotal += str.charCodeAt(i);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     if (ntotal < mtotal) {
       console.log("yes")
       const room = data.me + data.to;
@@ -176,10 +161,6 @@ io.on('connection', function (socket) {
       socket.emit('room is', room);
       console.log(`joined ${room}`)
       socket.on(room, data => {
-
-
-
-
         const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
         if (getFruit !== -1) {
           console.log('user is online so message delivered');
@@ -251,33 +232,12 @@ io.on('connection', function (socket) {
           io.sockets.in(room).emit('welcome message', newobj);
           console.log('user is offline so message is not delivered')
         }
-
-
-
-
         // io.sockets.in(room).emit('welcome message', data);
         db.collection('chat').doc(room).collection('message').add(data).then(() => {
           console.log("addes")
         })
       });
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   })
 
 
