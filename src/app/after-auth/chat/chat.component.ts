@@ -20,6 +20,7 @@ export class ChatComponent implements OnInit {
   currentroom: any;
   typing: any;
   img: any;
+  deliveredornot: any;
 
   constructor(private api: ApiCalls) {}
 
@@ -49,6 +50,18 @@ export class ChatComponent implements OnInit {
       console.log(data.online.length);
       const a = data.online.length;
       this.onlineusers = data.online;
+      for (const a of this.newmessagearray) {
+        // console.log(a);
+        if (a.status === 'not delivered') {
+          const getFruit = this.onlineusers.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+          if (getFruit === -1) {
+            console.log(a.status)
+            console.log('now is the time');
+            a.status = 'delivered';
+            console.log(a);
+          }
+        }
+      }
     });
     socket.on('new data', (datas) => {
       console.log(datas);
@@ -103,8 +116,22 @@ export class ChatComponent implements OnInit {
     });
 
     socket.on('welcome message', (data) => {
+      console.log(data);
       this.newmessagearray.push(data);
+      console.log(this.newmessagearray);
+
     });
+
+    // if (data.status === 'not delivered') {
+      // console.log('yes');
+      // const getFruit = this.onlineusers.findIndex(arrayforconnected => arrayforconnected.user === .to);
+      // if (getFruit !== -1) {
+    // }
+  // }
+  // console.log(this.newmessagearray);
+    // for (let a of this.newmessagearray) {
+      // console.log(this.newmessagearray);
+  // }
   }
 
   messagesend(text) {

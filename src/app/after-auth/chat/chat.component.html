@@ -45,8 +45,7 @@
         <div *ngIf="typing==='typing'">typing....</div>
         <div *ngIf="typing==='stop typing'"></div>
       </div>
-      <!-- <i class="fa fa-star"></i> -->
-    </div> <!-- end chat-header -->
+    </div>
     
     <div class="chat-history" id="chat-history" #scrollMe [scrollTop]="scrollMe.scrollHeight">
   
@@ -58,9 +57,9 @@
           </div>
           <div class="message other-message float-right">
            {{message.message}}
-           <!-- <img src="../../../assets/images/check-double-solid.svg" id="svg"> -->
-          <img src="../../../assets/images/check-square-solid.svg" id="svg"> 
-           <!-- <img src="../../../assets/images/check-solid.svg" id="svg"> -->
+           <img src="../../../assets/images/check-double-solid.svg" class="svg" *ngIf="message.status==='delivered'">
+          <!-- <img src="../../../assets/images/check-square-solid.svg" class="svg">  -->
+           <img src="../../../assets/images/check-solid.svg" class="svg" *ngIf="message.status==='not delivered'">
           </div>
         </li>
          
