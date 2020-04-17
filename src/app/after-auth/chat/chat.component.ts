@@ -64,6 +64,7 @@ export class ChatComponent implements OnInit {
       this.typing = data;
     });
   }
+
   changecomponent(id, name, image) {
     const socket = io('http://localhost:8000');
     this.messagesendid = id;
@@ -89,7 +90,6 @@ export class ChatComponent implements OnInit {
           room: data,
         };
         this.api.getmessages(obj).subscribe((res: any) => {
-          console.log(res);
           for (const message of res) {
             this.newmessagearray.push(message);
           }
@@ -103,7 +103,6 @@ export class ChatComponent implements OnInit {
     });
 
     socket.on('welcome message', (data) => {
-      // console.log(data);
       this.newmessagearray.push(data);
     });
   }
@@ -111,7 +110,7 @@ export class ChatComponent implements OnInit {
   messagesend(text) {
     if (text.value === '' || text.value === null) {
     } else {
-      const date = new Date(Date.now());
+      const milisecond = Date.now();
       const d = new Date();
       const h = d.getHours();
       const m = d.getMinutes();
@@ -125,7 +124,7 @@ export class ChatComponent implements OnInit {
           message: text.value,
           sendbyuid: this.localdata.uid,
           sendby: this.localdata.displayName,
-          internationaldate: date.toString(),
+          internationaldate: milisecond,
           date: `${h}:${m}:${s}`,
           to: this.messagesendid,
         });

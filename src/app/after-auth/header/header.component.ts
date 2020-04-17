@@ -37,4 +37,7 @@ export class HeaderComponent implements OnInit {
     localStorage.removeItem('accessToken');
     this.routes.navigate(['/login']);
   }
+  openNav(){
+    this.routes.navigate(['/dashboard']);
+  }
 }

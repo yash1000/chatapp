@@ -45,10 +45,10 @@
         <div *ngIf="typing==='typing'">typing....</div>
         <div *ngIf="typing==='stop typing'"></div>
       </div>
-      <i class="fa fa-star"></i>
+      <!-- <i class="fa fa-star"></i> -->
     </div> <!-- end chat-header -->
     
-    <div class="chat-history">
+    <div class="chat-history" id="chat-history" #scrollMe [scrollTop]="scrollMe.scrollHeight">
   
       <ul *ngFor='let message of newmessagearray'>
         <li class="clearfix" *ngIf='message.sendbyuid===localdata.uid && message.room===currentroom'>
@@ -58,6 +58,9 @@
           </div>
           <div class="message other-message float-right">
            {{message.message}}
+           <!-- <img src="../../../assets/images/check-double-solid.svg" id="svg"> -->
+          <img src="../../../assets/images/check-square-solid.svg" id="svg"> 
+           <!-- <img src="../../../assets/images/check-solid.svg" id="svg"> -->
           </div>
         </li>
          
@@ -82,11 +85,4 @@
       
       <button (click)="messagesend(messagevalue)">Send</button>
     </div> <!-- end chat-message -->
-    
-  
-    
-
   </div>
-
-
-

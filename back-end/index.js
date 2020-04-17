@@ -7,9 +7,6 @@ const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
 const firebas = require('firebase');
-var defaultStorage = admin.storage();
-var a = defaultStorage.bucket().storage;
-const projectId = "chatpp-da297";
 firebas.initializeApp(key);
 const multer = require('multer');
 app.use(express.static('public'));
@@ -106,6 +103,7 @@ app.post('/registration', (req, res) => {
 var arrayforconnected = [];
 io.on('connection', function (socket) {
 
+
   socket.on('id', (data) => {
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.id);
@@ -117,11 +115,15 @@ io.on('connection', function (socket) {
       })
     }
   })
+
+
   socket.on('disconnect', function (data) {
     console.log(data);
     socket.disconnect();
     console.log(arrayforconnected)
   });
+
+
   socket.on('typing', (data) => {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -129,6 +131,8 @@ io.on('connection', function (socket) {
       io.sockets.connected[getname.socketid].emit("totyping", 'typing');
     }
   })
+
+
   socket.on('stop typing', (data) => {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -136,6 +140,8 @@ io.on('connection', function (socket) {
       io.sockets.connected[getname.socketid].emit("stoptyping", 'stop typing');
     }
   })
+
+
   socket.on('new', (data) => {
     var ntotal = 0;
     var mtotal = 0;
@@ -174,6 +180,7 @@ io.on('connection', function (socket) {
     }
   })
 
+
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
     var useronlineobjectwithsocketid = {
@@ -202,10 +209,11 @@ io.on('connection', function (socket) {
     });
 
   })
+
+
   socket.on('chat', function (data) {
     console.log(data);
     console.log(data.to)
-    console.log("----------------------")
     console.log(arrayforconnected)
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -216,6 +224,7 @@ io.on('connection', function (socket) {
       console.log("user is offline")
     }
   })
+
 
   socket.on('request', function (data) {
     console.log(data);
@@ -277,6 +286,7 @@ io.on('connection', function (socket) {
     }
   })
 
+
   socket.on('acceptrequest', function (data) {
     console.log(data);
     console.log(data);
@@ -328,6 +338,7 @@ io.on('connection', function (socket) {
   })
 });
 
+
 app.post('/reject', (req, res) => {
   console.log(req.body)
   const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
@@ -345,11 +356,6 @@ app.post('/reject', (req, res) => {
     }).catch(err => {
       console.log(err)
     });
-})
-
-
-app.post('/sendrequest', (req, res) => {
-  console.log(req.body);
 })
 
 
@@ -479,6 +485,7 @@ app.post('/getfriends', (req, res) => {
           }
           arrayoffriend.push(newdata);
           if (arrayoffriend.length == newcount) {
+            console.log('array of friends')
             console.log(arrayoffriend);
             res.send(arrayoffriend);
           }
