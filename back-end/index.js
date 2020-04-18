@@ -175,6 +175,9 @@ io.on('connection', function (socket) {
             status: 'delivered'
           }
           io.sockets.in(room).emit('welcome message', newobj);
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
         } else {
           const newobj = {
             room: data.room,
@@ -188,13 +191,10 @@ io.on('connection', function (socket) {
           }
           io.sockets.in(room).emit('welcome message', newobj);
           console.log('user is offline so message is note delivered');
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
         }
-
-
-        // io.sockets.in(room).emit('welcome message', data);
-        db.collection('chat').doc(room).collection('message').add(data).then(() => {
-          console.log("addes")
-        })
       });
     } else if (mtotal < ntotal) {
       const room = data.to + data.me;
@@ -218,6 +218,9 @@ io.on('connection', function (socket) {
             status: 'delivered'
           }
           io.sockets.in(room).emit('welcome message', newobj);
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
         } else {
           const newobj = {
             room: data.room,
@@ -231,11 +234,10 @@ io.on('connection', function (socket) {
           }
           io.sockets.in(room).emit('welcome message', newobj);
           console.log('user is offline so message is not delivered')
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
         }
-        // io.sockets.in(room).emit('welcome message', data);
-        db.collection('chat').doc(room).collection('message').add(data).then(() => {
-          console.log("addes")
-        })
       });
     }
   })
@@ -416,6 +418,30 @@ app.post('/reject', (req, res) => {
     }).catch(err => {
       console.log(err)
     });
+})
+
+
+app.post('/messagestatechange',(req,res) => {
+  console.log('in it');
+  console.log(req.body);
+  for(let ab of req.body){
+    console.log(ab);
+      db.collection('chat').doc(ab.room).collection('message').where("internationaldate", "==", ab.internationaldate).get().then((data) => {
+      data.forEach((doc) => {
+        console.log('datas')
+          console.log(doc.data());
+          console.log(doc.id);
+          const abcd = doc.id;
+          console.log('ab')
+          console.log(ab)
+          db.collection('chat').doc(ab.room).collection('message').doc(abcd).update({
+            status: 'delivered',
+        }).then(console.log('update')).catch((err) => {
+          console.log(err);
+        });
+        });
+      })
+  }
 })
 
 

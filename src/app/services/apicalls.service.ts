@@ -39,4 +39,7 @@ export class ApiCalls {
   getmessages(id) {
     return this.https.post(this.baseurl + appinfo.info.getmessages, id);
   }
+  messagestatechange(data) {
+    return this.https.post(this.baseurl + appinfo.info.messagestatechange, data);
+  }
 }

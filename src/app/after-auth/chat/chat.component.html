@@ -58,7 +58,7 @@
           <div class="message other-message float-right">
            {{message.message}}
            <img src="../../../assets/images/check-double-solid.svg" class="svg" *ngIf="message.status==='delivered'">
-          <!-- <img src="../../../assets/images/check-square-solid.svg" class="svg">  -->
+          <img src="../../../assets/images/check-square-solid.svg" class="svg" *ngIf="message.status==='read'"> 
            <img src="../../../assets/images/check-solid.svg" class="svg" *ngIf="message.status==='not delivered'">
           </div>
         </li>

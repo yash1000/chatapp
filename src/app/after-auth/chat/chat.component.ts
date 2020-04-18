@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { isNullOrUndefined } from 'util';
 declare const $: any;
 @Component({
   selector: 'app-chat',
@@ -21,6 +22,7 @@ export class ChatComponent implements OnInit {
   typing: any;
   img: any;
   deliveredornot: any;
+  notdelivered = [];
 
   constructor(private api: ApiCalls) {}
 
@@ -51,16 +53,18 @@ export class ChatComponent implements OnInit {
       const a = data.online.length;
       this.onlineusers = data.online;
       for (const a of this.newmessagearray) {
-        // console.log(a);
         if (a.status === 'not delivered') {
-          const getFruit = this.onlineusers.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-          if (getFruit === -1) {
-            console.log(a.status)
-            console.log('now is the time');
+          const getFruit = this.onlineusers.findIndex(ab => ab.user === a.to);
+          if (getFruit !== (-1)) {
             a.status = 'delivered';
-            console.log(a);
+            this.notdelivered.push(a);
           }
         }
+      }
+      // console.log('llllllllllllll')
+      // console.log(this.notdelivered);
+      if (this.notdelivered.length !== 0) {
+      this.api.messagestatechange(this.notdelivered).subscribe((res: any) => {});
       }
     });
     socket.on('new data', (datas) => {
@@ -91,9 +95,19 @@ export class ChatComponent implements OnInit {
       if (c === true) {
         console.log(`room is ${a}`);
         this.currentroom = a;
+        // for (const abc of this.newmessagearray) {
+        //   if (abc.room === a) {
+        //     abc.status = 'read';
+        //   }
+        // }
       } else {
         console.log(`room is ${b}`);
         this.currentroom = b;
+        // for (const abc of this.newmessagearray) {
+        //   if (abc.room === b) {
+        //     abc.status = 'read';
+        //   }
+        // }
       }
       console.log('already includes');
     } else {
@@ -102,6 +116,11 @@ export class ChatComponent implements OnInit {
         const obj = {
           room: data,
         };
+        // for (const abc of this.newmessagearray) {
+        //   if (abc.room === data) {
+        //     abc.status = 'read';
+        //   }
+        // }
         this.api.getmessages(obj).subscribe((res: any) => {
           for (const message of res) {
             this.newmessagearray.push(message);
@@ -113,6 +132,13 @@ export class ChatComponent implements OnInit {
       this.chatroom.push(data);
       this.currentroom = data;
       console.log(this.currentroom);
+      for (const abc of this.newmessagearray) {
+        if (abc.room === data) {
+            abc.status = 'read';
+        }
+        console.log(abc.status);
+      }
+      // console.log(this.newmessagearray);
     });
 
     socket.on('welcome message', (data) => {
