@@ -18,6 +18,9 @@ export class FriendsComponent implements OnInit {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     socket.emit('startconnnection', { connencted: this.localdata.uid });
 
+    /**
+     * newfirend of other user accept request
+     */
     socket.on('newfriend', data => {
       console.log(data);
       this.datas.push(data);
@@ -28,6 +31,10 @@ export class FriendsComponent implements OnInit {
     this.objectofid = {
       id: this.localdata.uid
     };
+
+    /**
+     * api for get friend list from db
+     */
     this.api.getfriends(this.objectofid).subscribe((res: any) => {
       console.log(res);
       // tslint:disable-next-line: quotemark
@@ -42,6 +49,11 @@ export class FriendsComponent implements OnInit {
     });
     // console.log(this.datas)
   }
+
+  /**
+   * remove friend button click function
+   * @param id id of friend which is removed
+   */
   removefriend(id) {
     console.log(id);
     const newid = {

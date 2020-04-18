@@ -20,7 +20,11 @@ export class DashboardComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit() {
+  ngOnInit() {\
+
+    /**
+     * local storage access
+     */
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     console.log(this.localdata);
     this.displayname = this.localdata.displayName;

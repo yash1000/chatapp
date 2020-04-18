@@ -46,6 +46,11 @@ export class RequestComponent implements OnInit {
     });
     // }
   }
+
+  /**
+   * fucntion for accept friend request
+   * @param id id of accepted friend request
+   */
   acceptfriendrequest(id) {
     console.log(id);
     console.log(this.datas[0].id);
@@ -64,6 +69,11 @@ export class RequestComponent implements OnInit {
       from: id,
     });
   }
+
+  /**
+   * for reject friend req
+   * @param id if the user is reject the friend request id is deifne which friend
+   */
   rejectrequest(id) {
     const getFruit = this.datas.findIndex((d) => d.id === id);
     console.log(getFruit);

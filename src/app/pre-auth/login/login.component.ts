@@ -15,6 +15,9 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
 
+    /**
+     * form init
+     */
     this.profileForm = this.fb.group({
       Emailid: ['', [Validators.required, Validators.email]],
       password: [
@@ -37,6 +40,10 @@ export class LoginComponent implements OnInit {
       ]
     });
   }
+
+  /**
+   * subbmite form funcion with api call and db
+   */
   onSubmit(event) {
     console.log(this.profileForm.value);
     this.api.login(this.profileForm.value).subscribe((res: any) => {

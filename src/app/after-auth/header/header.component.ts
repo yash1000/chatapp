@@ -21,15 +21,11 @@ export class HeaderComponent implements OnInit {
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
     const socket = io('http://localhost:8000');
-    // socket.emit('startconnnection', { connencted: this.localdata.uid });
   }
 
-  // openNav() {
-  //   document.getElementById('mySidenav').style.width = '250px';
-  // }
-  // closeNav() {
-  //   document.getElementById('mySidenav').style.width = '0';
-  // }
+  /**
+   * on lotggout loclstorage clear and socket disconnected
+   */
   logout() {
     const socket = io('http://localhost:8000');
     socket.emit('id', {id: this.localdata.uid});

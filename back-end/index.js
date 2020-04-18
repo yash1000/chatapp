@@ -24,7 +24,7 @@ app.use(bodyparser.urlencoded({
 const path = require('path');
 app.use(express.static('public'));
 
-
+//validation for file
 function checkfiletype(file, cb) {
   const filetype = /jpeg|jpg|png|gif/;
   const extname = filetype.test(path.extname(file.originalname).toLowerCase());
@@ -62,7 +62,7 @@ const upload = multer({
 
 
 
-
+//registration api for new users with image
 app.post('/registration', (req, res) => {
   console.log(req.body);
   upload(req, res, (err) => {
@@ -100,10 +100,12 @@ app.post('/registration', (req, res) => {
   })
 })
 
+
 var arrayforconnected = [];
 io.on('connection', function (socket) {
 
 
+//online users array for all users
   socket.on('id', (data) => {
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.id);
@@ -117,6 +119,7 @@ io.on('connection', function (socket) {
   })
 
 
+//disconnecte the socket when user logout
   socket.on('disconnect', function (data) {
     console.log(data);
     socket.disconnect();
@@ -124,6 +127,7 @@ io.on('connection', function (socket) {
   });
 
 
+//onkeydown event of input
   socket.on('typing', (data) => {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -133,6 +137,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //onkeydown event of input when stop typing
   socket.on('stop typing', (data) => {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -142,6 +147,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //user join room based on ascii value sum of id
   socket.on('new', (data) => {
     var ntotal = 0;
     var mtotal = 0;
@@ -243,6 +249,7 @@ io.on('connection', function (socket) {
   })
 
 
+//simple connection socket
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
     var useronlineobjectwithsocketid = {
@@ -273,6 +280,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //chat message send by socket on method
   socket.on('chat', function (data) {
     console.log(data);
     console.log(data.to)
@@ -288,6 +296,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //friend request with socket adn database
   socket.on('request', function (data) {
     console.log(data);
     const button = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
@@ -349,6 +358,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //accept friend request then update the database and send update with socket
   socket.on('acceptrequest', function (data) {
     console.log(data);
     console.log(data);
@@ -387,6 +397,7 @@ io.on('connection', function (socket) {
   })
 
 
+  //if friend request is not accepted or rejected then button disable
   socket.on('buttonshow', function (data) {
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.from);
@@ -400,7 +411,7 @@ io.on('connection', function (socket) {
   })
 });
 
-
+//friend request reject update db 
 app.post('/reject', (req, res) => {
   console.log(req.body)
   const arrayRemove = firebase.firestore.FieldValue.arrayRemove;
@@ -421,6 +432,7 @@ app.post('/reject', (req, res) => {
 })
 
 
+//update when user is offline or online with db update
 app.post('/messagestatechange',(req,res) => {
   console.log('in it');
   console.log(req.body);
@@ -445,6 +457,7 @@ app.post('/messagestatechange',(req,res) => {
 })
 
 
+//api for users requests
 app.post('/getrequests', (req, res) => {
   console.log(req.body.id)
   var response = [];
@@ -474,7 +487,7 @@ app.post('/getrequests', (req, res) => {
 })
 
 
-
+// api for login user
 app.post('/login', (req, res) => {
   console.log(req.body.Emailid);
   firebas.auth().signInWithEmailAndPassword(req.body.Emailid, req.body.password).then((result) => {
@@ -516,6 +529,8 @@ app.post('/login', (req, res) => {
   });
 })
 
+
+//give all user to the user login inspite of login user
 app.post('/allusers', (req, res) => {
   console.log(req.body)
   db.collection('users').doc(req.body.uid).get().then(datas => {
@@ -542,7 +557,7 @@ app.post('/allusers', (req, res) => {
 })
 
 
-
+//api for request list of user
 app.post('/getrequestlist', (req, res) => {
   console.log(req.body.uid);
   db.collection('users').doc(req.body.uid).get().then(data => {
@@ -552,6 +567,7 @@ app.post('/getrequestlist', (req, res) => {
 })
 
 
+//user friend list
 var arrayoffriend = [];
 app.post('/getfriends', (req, res) => {
   console.log(req.body);
@@ -585,6 +601,7 @@ app.post('/getfriends', (req, res) => {
 });
 
 
+//remove friend api with chat deletion on db
 app.post('/removefriend', (req, res) => {
   console.log(req.body)
 
@@ -652,6 +669,7 @@ app.post('/removefriend', (req, res) => {
 })
 
 
+//api for message get from db
 app.post('/getmessages', (req, res) => {
   const arrayofmessage = [];
   console.log(req.body);
@@ -661,9 +679,7 @@ app.post('/getmessages', (req, res) => {
       arrayofmessage.push(doc.data())
     })
     res.send(arrayofmessage);
-
   })
-
 })
 
 

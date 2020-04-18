@@ -47,24 +47,6 @@ export class RegistrationComponent implements OnInit {
     });
   }
   onSubmit(event) {
-    // console.log(this.profileForm.value);
-  //   const toBase64 = file => new Promise((resolve, reject) => {
-  //     const reader = new FileReader();
-  //     reader.readAsDataURL(file);
-  //     reader.onload = () => resolve(reader.result);
-  //     reader.onerror = error => reject(error);
-  // });
-  //   console.log(this.selectedFile);
-  //   console.log(toBase64(this.selectedFile));
-  //   this.objectimage = toBase64(this.selectedFile);
-  //   // const res = this.objectimage.split(',');
-  //   // console.log(res[1]);
-  //   console.log(this.objectimage.__zone_symbol__value);
-  //   this.new = {
-  //     displayName: this.profileForm.value.username,
-  //     Emailid: this.profileForm.value.Emailid,
-  //     password: this.profileForm.value.password
-  //   };
     this.fd.append('uploadfile', this.selectedFile, this.selectedFile.name);
     this.fd.append('displayName', this.profileForm.value.username);
     this.fd.append('Emailid',  this.profileForm.value.Emailid);

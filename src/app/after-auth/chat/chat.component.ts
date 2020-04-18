@@ -16,6 +16,7 @@ export class ChatComponent implements OnInit {
   chatname: any;
   room: any;
   messagesendid: any;
+  arrayofmessage = [];
   newmessagearray = [];
   chatroom = [];
   currentroom: any;
@@ -27,11 +28,20 @@ export class ChatComponent implements OnInit {
   constructor(private api: ApiCalls) {}
 
   ngOnInit() {
+
+    /**
+     * access to local user data
+     */
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     console.log(this.localdata.uid);
     this.objectofid = {
       id: this.localdata.uid,
     };
+
+    /**
+     * api for get friend list for sidebar
+     * @param this.objectofid is user id for database search
+     */
     this.api.getfriends(this.objectofid).subscribe((res: any) => {
       console.log(res);
       // tslint:disable-next-line:quotemark
@@ -44,7 +54,10 @@ export class ChatComponent implements OnInit {
         }
       }
     });
-    console.log(this.datas);
+
+    /**
+     * socket connection for online user , message state change , typing
+     */
     const socket = io('http://localhost:8000');
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', (data) => {
@@ -54,17 +67,17 @@ export class ChatComponent implements OnInit {
       this.onlineusers = data.online;
       for (const a of this.newmessagearray) {
         if (a.status === 'not delivered') {
-          const getFruit = this.onlineusers.findIndex(ab => ab.user === a.to);
-          if (getFruit !== (-1)) {
+          const getFruit = this.onlineusers.findIndex((ab) => ab.user === a.to);
+          if (getFruit !== -1) {
             a.status = 'delivered';
             this.notdelivered.push(a);
           }
         }
       }
-      // console.log('llllllllllllll')
-      // console.log(this.notdelivered);
       if (this.notdelivered.length !== 0) {
-      this.api.messagestatechange(this.notdelivered).subscribe((res: any) => {});
+        this.api
+          .messagestatechange(this.notdelivered)
+          .subscribe((res: any) => {});
       }
     });
     socket.on('new data', (datas) => {
@@ -82,8 +95,18 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  /**
+   * on click of sidebase component open of that friend
+   * @param id change component id of user(friend)
+   * @param name name of the friend
+   * @param image image of the friend
+   */
   changecomponent(id, name, image) {
     const socket = io('http://localhost:8000');
+
+    /**
+     * message settinges
+     */
     this.messagesendid = id;
     this.chatname = name;
     this.img = image;
@@ -128,38 +151,49 @@ export class ChatComponent implements OnInit {
         });
       });
     }
+
+    /**
+     * room for the user for chat
+     */
     socket.on('room is', (data) => {
       this.chatroom.push(data);
       this.currentroom = data;
       console.log(this.currentroom);
-      for (const abc of this.newmessagearray) {
-        if (abc.room === data) {
-            abc.status = 'read';
-        }
-        console.log(abc.status);
-      }
-      // console.log(this.newmessagearray);
+      console.log(this.newmessagearray);
+
+      /**
+       * under construction the message read or not functionality
+       */
+
+      // setTimeout(() => {
+      //   for (const abc of this.newmessagearray) {
+      //     // console.log(this.localdata.)
+      //     if (abc.to === this.localdata.uid && abc.room === this.currentroom) {
+      //       console.log(abc);
+      //       if (abc.room === data) {
+      //         abc.status = 'read';
+      //       }
+      //       console.log(abc.status);
+      //       this.arrayofmessage.push(abc);
+      //     }
+      //   }
+      //   // socket.emit('joinedroom' , data =>{
+      //   // })
+      // }, 3000);
+
     });
 
     socket.on('welcome message', (data) => {
       console.log(data);
       this.newmessagearray.push(data);
       console.log(this.newmessagearray);
-
     });
-
-    // if (data.status === 'not delivered') {
-      // console.log('yes');
-      // const getFruit = this.onlineusers.findIndex(arrayforconnected => arrayforconnected.user === .to);
-      // if (getFruit !== -1) {
-    // }
-  // }
-  // console.log(this.newmessagearray);
-    // for (let a of this.newmessagearray) {
-      // console.log(this.newmessagearray);
-  // }
   }
 
+  /**
+   * add the date to message
+   * @param text text of the message
+   */
   messagesend(text) {
     if (text.value === '' || text.value === null) {
     } else {
@@ -171,7 +205,6 @@ export class ChatComponent implements OnInit {
       const socket = io('http://localhost:8000');
       socket.emit('new', { me: this.localdata.uid, to: this.messagesendid });
       socket.on('room is', (data) => {
-        // console.log(data);
         socket.emit(data, {
           room: data,
           message: text.value,
@@ -184,6 +217,11 @@ export class ChatComponent implements OnInit {
       });
     }
   }
+
+  /**
+   * typing function
+   * @param e if user is typing that is on keydown
+   */
   myFunction(e) {
     const socket = io('http://localhost:8000');
     if (e.value !== '') {

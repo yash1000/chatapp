@@ -20,11 +20,14 @@ export class UsersComponent implements OnInit {
 
 
   ngOnInit() {
-    // this.ngxService.start();
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     this.uid = {uid: this.localdata.uid };
     const local = JSON.parse(localStorage.getItem('accessToken'));
 
+
+    /**
+     * api for get all users if already friend then dont splice it
+     */
     this.api.getallusers(this.uid).subscribe((data: any) => {
       console.log(data);
       const getname = data.findIndex(data => data.id === local.uid);
@@ -34,6 +37,11 @@ export class UsersComponent implements OnInit {
       this.data.push(data[i]);  }
       console.log(this.data);
     });
+
+
+    /**
+     * if already request a friend then button diable functionality witrh api call to request
+     */
     this.api.getrequestlist(this.uid).subscribe((data: any) => {
       console.log(data);
       this.newdata = data;
@@ -56,6 +64,10 @@ export class UsersComponent implements OnInit {
     });
   }
 
+  /**
+   * request send fucntion
+   * @param id to whom the request is to be send
+   */
   requestsend(id) {
     const socket = io('http://localhost:8000');
     socket.emit('request', {
