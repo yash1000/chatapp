@@ -6,10 +6,10 @@
 
   <div class="container1 clearfix">
     <div class="people-list" id="people-list">
-      <!-- <div class="search">
+      <div class="search">
         <input type="text" placeholder="search" />
         <i class="fa fa-search"></i>
-      </div> -->
+      </div>
     <div *ngIf='!(datas.length === 0); else new'>
       <ul class="list" *ngFor='let data of datas'>
         <li class="clearfix" (click)="changecomponent(data.uid,data.name,data.image)">
@@ -42,7 +42,7 @@
       
       <div class="chat-about">
         <div class="chat-with">{{chatname}}</div>
-        <div *ngIf="typing==='typing'">typing....</div>
+        <div *ngIf="typing==='typing' && newname===messagesendid">typing....</div>
         <div *ngIf="typing==='stop typing'"></div>
       </div>
     </div>

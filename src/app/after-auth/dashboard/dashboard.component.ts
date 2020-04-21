@@ -20,7 +20,7 @@ export class DashboardComponent implements OnInit {
 
   constructor(private router: Router) {}
 
-  ngOnInit() {\
+  ngOnInit() {
 
     /**
      * local storage access

@@ -24,11 +24,11 @@ export class ChatComponent implements OnInit {
   img: any;
   deliveredornot: any;
   notdelivered = [];
+  newname: any;
 
   constructor(private api: ApiCalls) {}
 
   ngOnInit() {
-
     /**
      * access to local user data
      */
@@ -88,10 +88,19 @@ export class ChatComponent implements OnInit {
     });
 
     socket.on('totyping', (data) => {
-      this.typing = data;
+      this.typing = data.string;
+      this.newname = data.from;
     });
     socket.on('stoptyping', (data) => {
       this.typing = data;
+    });
+
+    socket.on('read message', (data) => {
+      for (const message of this.newmessagearray) {
+        if (message.room === data) {
+          message.status = 'read';
+        }
+      }
     });
   }
 
@@ -118,19 +127,51 @@ export class ChatComponent implements OnInit {
       if (c === true) {
         console.log(`room is ${a}`);
         this.currentroom = a;
-        // for (const abc of this.newmessagearray) {
-        //   if (abc.room === a) {
-        //     abc.status = 'read';
-        //   }
-        // }
+        console.log(this.currentroom);
+        socket.emit('user with room', {
+          roomis: this.currentroom,
+          useris: this.localdata.uid,
+        });
+
+        setTimeout(() => {
+          for (const abc of this.newmessagearray) {
+            if (
+              abc.to === this.localdata.uid &&
+              abc.room === this.currentroom &&
+              abc.status === 'delivered'
+            ) {
+              console.log(abc);
+              if (abc.room === a) {
+                abc.status = 'read';
+                socket.emit('messageroomis', abc);
+              }
+            }
+          }
+        }, 3000);
       } else {
         console.log(`room is ${b}`);
         this.currentroom = b;
-        // for (const abc of this.newmessagearray) {
-        //   if (abc.room === b) {
-        //     abc.status = 'read';
-        //   }
-        // }
+        console.log(this.currentroom);
+        socket.emit('user with room', {
+          roomis: this.currentroom,
+          useris: this.localdata.uid,
+        });
+
+        setTimeout(() => {
+          for (const abc of this.newmessagearray) {
+            if (
+              abc.to === this.localdata.uid &&
+              abc.room === this.currentroom &&
+              abc.status === 'delivered'
+            ) {
+              console.log(abc);
+              if (abc.room === b) {
+                abc.status = 'read';
+                socket.emit('messageroomis', abc);
+              }
+            }
+          }
+        }, 3000);
       }
       console.log('already includes');
     } else {
@@ -139,11 +180,6 @@ export class ChatComponent implements OnInit {
         const obj = {
           room: data,
         };
-        // for (const abc of this.newmessagearray) {
-        //   if (abc.room === data) {
-        //     abc.status = 'read';
-        //   }
-        // }
         this.api.getmessages(obj).subscribe((res: any) => {
           for (const message of res) {
             this.newmessagearray.push(message);
@@ -161,26 +197,32 @@ export class ChatComponent implements OnInit {
       console.log(this.currentroom);
       console.log(this.newmessagearray);
 
+      console.log(this.currentroom);
+      socket.emit('user with room', {
+        roomis: this.currentroom,
+        useris: this.localdata.uid,
+      });
+
       /**
        * under construction the message read or not functionality
        */
 
-      // setTimeout(() => {
-      //   for (const abc of this.newmessagearray) {
-      //     // console.log(this.localdata.)
-      //     if (abc.to === this.localdata.uid && abc.room === this.currentroom) {
-      //       console.log(abc);
-      //       if (abc.room === data) {
-      //         abc.status = 'read';
-      //       }
-      //       console.log(abc.status);
-      //       this.arrayofmessage.push(abc);
-      //     }
-      //   }
-      //   // socket.emit('joinedroom' , data =>{
-      //   // })
-      // }, 3000);
-
+      setTimeout(() => {
+        for (const abc of this.newmessagearray) {
+          // console.log(this.localdata.)
+          if (
+            abc.to === this.localdata.uid &&
+            abc.room === this.currentroom &&
+            abc.status === 'delivered'
+          ) {
+            console.log(abc);
+            if (abc.room === data) {
+              abc.status = 'read';
+              socket.emit('messageroomis', abc);
+            }
+          }
+        }
+      }, 3000);
     });
 
     socket.on('welcome message', (data) => {

@@ -102,7 +102,55 @@ app.post('/registration', (req, res) => {
 
 
 var arrayforconnected = [];
+var roomwithuserid = [];
 io.on('connection', function (socket) {
+
+
+socket.on('messageroomis',(data) => {
+  console.log('data with read')
+  console.log(data);
+  console.log('ooooooooooooooooooo')
+  console.log(data.sendbyuid);
+  const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.sendbyuid);
+    if (getFruit !== -1) {
+      var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.sendbyuid);
+      io.sockets.connected[getname.socketid].emit("read message", data.room);
+console.log(data.room);
+
+      db.collection('chat').doc(data.room).collection('message').where("internationaldate", "==", data.internationaldate).get().then((data) => {
+        data.forEach((doc) => {
+          console.log('datas')
+            console.log(doc.data());
+            console.log(doc.id);
+            const abcd = doc.id;
+            db.collection('chat').doc(doc.data().room).collection('message').doc(abcd).update({
+              status: 'read',
+          }).then(console.log('update')).catch((err) => {
+            console.log(err);
+          });
+          });
+        })
+    }
+})
+
+
+socket.on('user with room', (data) => {
+
+  console.log(data);
+  const getFruit = roomwithuserid.findIndex(ab => ab.useris === data.useris);
+  console.log('get')
+  console.log(getFruit)
+  if (getFruit !== -1) {
+    roomwithuserid.splice(getFruit, 1);
+    roomwithuserid.push(data);
+    console.log('room is')
+    console.log(roomwithuserid);
+  } else {
+    roomwithuserid.push(data);
+    console.log('room is')
+    console.log(roomwithuserid);
+  }
+})
 
 
 //online users array for all users
@@ -129,10 +177,15 @@ io.on('connection', function (socket) {
 
 //onkeydown event of input
   socket.on('typing', (data) => {
+    console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-      io.sockets.connected[getname.socketid].emit("totyping", 'typing');
+      const object = {
+        from:data.me,
+        string:'typing'
+      }
+      io.sockets.connected[getname.socketid].emit("totyping", object);
     }
   })
 
@@ -167,9 +220,33 @@ io.on('connection', function (socket) {
       socket.emit('room is', room);
       console.log(`joined ${room}`)
       socket.on(room, data => {
+
+
+        const indexofuser = roomwithuserid.findIndex(ab => ab.useris === data.to);
+        const userwithroom = roomwithuserid.find(ab => ab.useris === data.to);
+        console.log(userwithroom);
         const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
         if (getFruit !== -1) {
           console.log('user is online so message delivered');
+
+          if(indexofuser !== -1 && userwithroom.roomis === data.room){
+            console.log('user is in same room so message read');
+                       const newobj = {
+                      room: data.room,
+                      message: data.message,
+                      sendbyuid: data.sendbyuid,
+                      sendby: data.sendby,
+                      internationaldate: data.internationaldate,
+                      date: data.date,
+                      to: data.to,
+                      status: 'read'
+                    } 
+                    console.log(newobj);
+                    io.sockets.in(room).emit('welcome message', newobj);
+                    db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+                      console.log("addes")
+                    })
+          } else {
           const newobj = {
             room: data.room,
             message: data.message,
@@ -184,6 +261,7 @@ io.on('connection', function (socket) {
           db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
             console.log("addes")
           })
+          }
         } else {
           const newobj = {
             room: data.room,
@@ -201,6 +279,7 @@ io.on('connection', function (socket) {
             console.log("addes")
           })
         }
+
       });
     } else if (mtotal < ntotal) {
       const room = data.to + data.me;
@@ -210,40 +289,65 @@ io.on('connection', function (socket) {
 
       socket.on(room, data => {
 
-        const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-        if (getFruit !== -1) {
-          console.log('user is online so message delivered')
-          const newobj = {
-            room: data.room,
-            message: data.message,
-            sendbyuid: data.sendbyuid,
-            sendby: data.sendby,
-            internationaldate: data.internationaldate,
-            date: data.date,
-            to: data.to,
-            status: 'delivered'
-          }
-          io.sockets.in(room).emit('welcome message', newobj);
-          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-            console.log("addes")
-          })
-        } else {
-          const newobj = {
-            room: data.room,
-            message: data.message,
-            sendbyuid: data.sendbyuid,
-            sendby: data.sendby,
-            internationaldate: data.internationaldate,
-            date: data.date,
-            to: data.to,
-            status: 'not delivered'
-          }
-          io.sockets.in(room).emit('welcome message', newobj);
-          console.log('user is offline so message is not delivered')
-          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-            console.log("addes")
-          })
-        }
+
+        const indexofuser = roomwithuserid.findIndex(ab => ab.useris === data.to);
+
+    const userwithroom = roomwithuserid.find(ab => ab.useris === data.to);
+    console.log(userwithroom);
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+    if (getFruit !== -1) {
+      console.log('user is online so message delivered');
+
+      if(indexofuser !== -1 && userwithroom.roomis === data.room){
+        console.log('user is in same room so message read');
+                   const newobj = {
+                  room: data.room,
+                  message: data.message,
+                  sendbyuid: data.sendbyuid,
+                  sendby: data.sendby,
+                  internationaldate: data.internationaldate,
+                  date: data.date,
+                  to: data.to,
+                  status: 'read'
+                } 
+                console.log(newobj);
+                io.sockets.in(room).emit('welcome message', newobj);
+                db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+                  console.log("addes")
+                })
+      } else {
+      const newobj = {
+        room: data.room,
+        message: data.message,
+        sendbyuid: data.sendbyuid,
+        sendby: data.sendby,
+        internationaldate: data.internationaldate,
+        date: data.date,
+        to: data.to,
+        status: 'delivered'
+      }
+      io.sockets.in(room).emit('welcome message', newobj);
+      db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+        console.log("addes")
+      })
+      }
+    } else {
+      const newobj = {
+        room: data.room,
+        message: data.message,
+        sendbyuid: data.sendbyuid,
+        sendby: data.sendby,
+        internationaldate: data.internationaldate,
+        date: data.date,
+        to: data.to,
+        status: 'not delivered'
+      }
+      io.sockets.in(room).emit('welcome message', newobj);
+      console.log('user is offline so message is note delivered');
+      db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+        console.log("addes")
+      })
+    }
       });
     }
   })
