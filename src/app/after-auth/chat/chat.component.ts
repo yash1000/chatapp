@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
-import { isNullOrUndefined } from 'util';
 declare const $: any;
 @Component({
   selector: 'app-chat',
@@ -65,12 +64,12 @@ export class ChatComponent implements OnInit {
       console.log(data.online.length);
       const a = data.online.length;
       this.onlineusers = data.online;
-      for (const a of this.newmessagearray) {
-        if (a.status === 'not delivered') {
-          const getFruit = this.onlineusers.findIndex((ab) => ab.user === a.to);
+      for (const message of this.newmessagearray) {
+        if (message.status === 'not delivered') {
+          const getFruit = this.onlineusers.findIndex((ab) => ab.user === message.to);
           if (getFruit !== -1) {
-            a.status = 'delivered';
-            this.notdelivered.push(a);
+            message.status = 'delivered';
+            this.notdelivered.push(message);
           }
         }
       }
@@ -80,19 +79,14 @@ export class ChatComponent implements OnInit {
           .subscribe((res: any) => {});
       }
     });
-    socket.on('new data', (datas) => {
-      console.log(datas);
-    });
-    socket.on('chat message', (data) => {
-      console.log(data);
-    });
 
     socket.on('totyping', (data) => {
       this.typing = data.string;
       this.newname = data.from;
     });
     socket.on('stoptyping', (data) => {
-      this.typing = data;
+      this.typing = data.string;
+      this.newname = data.from;
     });
 
     socket.on('read message', (data) => {

@@ -195,7 +195,11 @@ socket.on('user with room', (data) => {
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
-      io.sockets.connected[getname.socketid].emit("stoptyping", 'stop typing');
+      const object = {
+        from:data.me,
+        string:'stop typing'
+      }
+      io.sockets.connected[getname.socketid].emit("stoptyping", object);
     }
   })
 
