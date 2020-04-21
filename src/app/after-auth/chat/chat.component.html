@@ -43,7 +43,7 @@
       <div class="chat-about">
         <div class="chat-with">{{chatname}}</div>
         <div *ngIf="typing==='typing' && newname===messagesendid">typing....</div>
-        <div *ngIf="typing==='stop typing'"></div>
+        <div *ngIf="typing==='stop typing' && newname===messagesendid"></div>
       </div>
     </div>
     
