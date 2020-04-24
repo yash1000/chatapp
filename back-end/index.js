@@ -6,6 +6,7 @@ firebase.initializeApp(key);
 const db = admin.firestore();
 const bodyparser = require('body-parser');
 const app = express();
+// app.use(siofu.router);
 const firebas = require('firebase');
 firebas.initializeApp(key);
 const multer = require('multer');
@@ -23,6 +24,13 @@ app.use(bodyparser.urlencoded({
 }))
 const path = require('path');
 app.use(express.static('public'));
+// var siofu = require("socketio-file-upload");
+// var rot = siofu.router;
+// app.use(rot);
+// var fs = require('fs');
+// var exec = require('child_process').exec;
+// var util = require('util');
+
 
 //validation for file
 function checkfiletype(file, cb) {
@@ -106,17 +114,15 @@ var roomwithuserid = [];
 io.on('connection', function (socket) {
 
 
+  // var uploader = new siofu();
+  // uploader.dir = "/path/to/save/uploads";
+  // uploader.listen(socket);
+
 socket.on('messageroomis',(data) => {
-  console.log('data with read')
-  console.log(data);
-  console.log('ooooooooooooooooooo')
-  console.log(data.sendbyuid);
   const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.sendbyuid);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.sendbyuid);
       io.sockets.connected[getname.socketid].emit("read message", data.room);
-console.log(data.room);
-
       db.collection('chat').doc(data.room).collection('message').where("internationaldate", "==", data.internationaldate).get().then((data) => {
         data.forEach((doc) => {
           console.log('datas')

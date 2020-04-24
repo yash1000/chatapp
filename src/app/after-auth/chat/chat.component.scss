@@ -21,11 +21,11 @@ body {
   width: 30%;
   background: #444753;
   border-radius: 5px;
-  height: 90vh;
+  height: 90.5vh;
   display: inline-block;
-  overflow: scroll;
+  // overflow: scroll;
   // overflow-x: scroll;
-//   overflow-y:hidden;
+  overflow-y:auto;
 }
 .newtext{
   width: 80%;
@@ -90,12 +90,12 @@ padding-left: 0px !important;
 .chat {
   width: 70%;
 //   margin-top: 12px;
-height: 88vh;
+height: 90.5vh;
 // overflow: scroll;
-  padding: 10px;
+  // padding: 10px;
   float:right;
 //   position: absolute;
-  background: #F2F5F8;
+  background: #ffe0bd;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 //   height:100px !important;
@@ -105,6 +105,7 @@ height: 88vh;
   .chat-header {
     // padding: 20px;
     border-bottom: 2px solid white;
+    padding: 10px;
     
     img {
       float: left;
@@ -136,8 +137,9 @@ height: 88vh;
   .chat-history {
     padding: 30px 30px 20px;
     border-bottom: 2px solid white;
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 65vh;
+    position: relative;
     
     .message-data {
       margin-bottom: 15px;
@@ -189,35 +191,33 @@ height: 88vh;
   }
   
   .chat-message {
-    // padding: 30px;
-    
+    padding: 10px;
+    height: 10%;
     textarea {
-      width: 100%;
+      margin-top:12px;
+      width: 95%;
+      padding:5px;
       border: none;
-      padding: 10px 20px;
+      // padding: 10px 20px;
       font: 14px/22px "Lato", Arial, sans-serif;
-      margin-bottom: 10px;
+      // margin-bottom: 10px;
       border-radius: 5px;
       resize: none;
       
     }
     
-    .fa-file-o, .fa-file-image-o {
-      font-size: 16px;
-      color: gray;
-      cursor: pointer;
-      
-    }
+ 
     
     button {
       float: right;
       color: $blue;
+      margin-top:25px;
       font-size: 16px;
       text-transform: uppercase;
       border: none;
       cursor: pointer;
       font-weight: bold;
-      background: #F2F5F8;
+      // background: #F2F5F8;
       
       &:hover {
         color: darken($blue, 7%);
@@ -278,4 +278,44 @@ img{
   // display: inline-block;
   float: right;
   margin-top: 15px;
+}
+.abcd{
+  position: absolute;
+  margin-top: -120px;
+  border-radius: 15px;
+  // opacity: 0.5;
+  margin-left: 8px;
+  background-color: rgba(0,0,0,0.5);
+  width: 65%;
+  display: flex;
+  // height: 15%;
+  // overflow-x: hidden;
+  overflow-y: hidden;
+  height: auto;
+  // display: none;
+  overflow-x: auto;
+  
+}
+#blah{
+  // padding-left:12px ;
+  margin-left: 20px;
+  height: 100px;
+  width: 150px;
+  border-radius: 15px;
+  display: inline-block;
+}
+video{
+  height: 100px;
+  width: 150px;
+  object-fit: fill;
+  // padding-left:12px ;
+  margin-left: 20px;
+  border-radius: 15px;
+}
+#ic{
+  color: black;
+  // background-color: white;
+  // border-radius: 100%;
+  margin-bottom:100px ;
+  position: absolute;
 }

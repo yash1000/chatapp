@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { DomSanitizer } from '@angular/platform-browser';
+import { clearScreenDown } from 'readline';
 declare const $: any;
 @Component({
   selector: 'app-chat',
@@ -13,7 +15,11 @@ export class ChatComponent implements OnInit {
   datas = [];
   onlineusers: any;
   chatname: any;
+  arrayforimage = [];
+  arrayforvideo = [];
   room: any;
+  videoobject = [];
+  imageobject = [];
   messagesendid: any;
   arrayofmessage = [];
   newmessagearray = [];
@@ -24,10 +30,14 @@ export class ChatComponent implements OnInit {
   deliveredornot: any;
   notdelivered = [];
   newname: any;
+  selectedFile: File;
+  localUrl: any;
+  abcd: any;
 
-  constructor(private api: ApiCalls) {}
+  constructor(private api: ApiCalls, private sanitizer: DomSanitizer) {}
 
   ngOnInit() {
+    // console.log(this.arrayforimage.length);
     /**
      * access to local user data
      */
@@ -66,7 +76,9 @@ export class ChatComponent implements OnInit {
       this.onlineusers = data.online;
       for (const message of this.newmessagearray) {
         if (message.status === 'not delivered') {
-          const getFruit = this.onlineusers.findIndex((ab) => ab.user === message.to);
+          const getFruit = this.onlineusers.findIndex(
+            (ab) => ab.user === message.to
+          );
           if (getFruit !== -1) {
             message.status = 'delivered';
             this.notdelivered.push(message);
@@ -141,7 +153,7 @@ export class ChatComponent implements OnInit {
               }
             }
           }
-        }, 3000);
+        }, 2000);
       } else {
         console.log(`room is ${b}`);
         this.currentroom = b;
@@ -165,7 +177,7 @@ export class ChatComponent implements OnInit {
               }
             }
           }
-        }, 3000);
+        }, 2000);
       }
       console.log('already includes');
     } else {
@@ -216,7 +228,7 @@ export class ChatComponent implements OnInit {
             }
           }
         }
-      }, 3000);
+      }, 2000);
     });
 
     socket.on('welcome message', (data) => {
@@ -252,6 +264,9 @@ export class ChatComponent implements OnInit {
         });
       });
     }
+    if (this.videoobject.length !== 0) {
+      console.log(this.videoobject);
+    }
   }
 
   /**
@@ -268,5 +283,93 @@ export class ChatComponent implements OnInit {
         to: this.messagesendid,
       });
     }
+  }
+  createFormData(event) {
+    this.selectedFile = event.target.files[0] as File;
+    const fileName = this.selectedFile.name;
+    const allowedextensions = new Array('mp4', 'mpg', 'mp2', 'webm');
+    const allowedextensionsforimage = new Array('jpg', 'jpeg', 'png');
+    const fileextension = fileName.split('.').pop().toLowerCase();
+    console.log(fileextension);
+    for (const a of allowedextensions) {
+      if (a === fileextension) {
+        console.log('file is video');
+        const onefile = event.target.files[0] as File;
+        console.log(this.videoobject);
+        const getFruit = this.videoobject.findIndex(
+          (ab) => ab.name === onefile.name
+        );
+        console.log(getFruit);
+        if (getFruit !== -1) {
+          console.log('already exist');
+        } else {
+          const newfile = event.target.files[0] as File;
+          this.videoobject.push(newfile);
+          console.log(this.videoobject);
+          const file = event.target.files[0] as File;
+          const b = URL.createObjectURL(file);
+          const sanitizedUrl = this.sanitizer.bypassSecurityTrustUrl(
+            URL.createObjectURL(event.target.files[0] as File)
+          );
+          console.log(sanitizedUrl);
+          console.log('yes');
+          this.arrayforvideo.push(sanitizedUrl);
+          console.log('array');
+          console.log(this.arrayforvideo);
+          this.abcd = sanitizedUrl;
+          console.log('b');
+          console.log(sanitizedUrl);
+          console.log(typeof b);
+        }
+      } else {
+      }
+    }
+    for (const b of allowedextensionsforimage) {
+      if (b === fileextension) {
+        console.log('file is image');
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.localUrl = e.target.result;
+          console.log(this.localUrl);
+          if (this.arrayforimage.length === 0) {
+            this.arrayforimage.push(e.target.result);
+          } else {
+            const getFruit = this.arrayforimage.findIndex(
+              (ab) => ab === e.target.result
+            );
+            if (getFruit === -1) {
+              this.arrayforimage.push(e.target.result);
+              const newfile = event.target.files[0] as File;
+              this.videoobject.push(newfile);
+            } else {
+              console.log('already exist');
+            }
+          }
+        };
+        reader.readAsDataURL(event.target.files[0]);
+        console.log(this.arrayforimage.length);
+        console.log(this.arrayforimage);
+      } else {
+      }
+    }
+  }
+  rmeoveimage(a) {
+    const abc = this.arrayforimage.findIndex((ab) => ab === a);
+    if (abc !== -1) {
+      const b = this.arrayforimage.find((ab) => ab === a);
+      this.arrayforimage.splice(abc, 1);
+    }
+    console.log(this.arrayforimage);
+  }
+  removevideo(ab) {
+    console.log(ab);
+    const abc = this.arrayforvideo.findIndex((array) => array === ab);
+    console.log(abc);
+    if (abc !== -1) {
+      const b = this.arrayforvideo.find((array) => array === ab);
+      console.log(b);
+      this.arrayforvideo.splice(abc, 1);
+    }
+    console.log(this.arrayforvideo);
   }
 }

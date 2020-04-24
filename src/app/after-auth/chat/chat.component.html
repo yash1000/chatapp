@@ -45,6 +45,24 @@
         <div *ngIf="typing==='typing' && newname===messagesendid">typing....</div>
         <div *ngIf="typing==='stop typing' && newname===messagesendid"></div>
       </div>
+
+
+            <!-- <form enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)"> -->
+        <!-- <input   (change)="createFormData($event)">
+        <i type="file" formControlName="image" class="fa fa-file-image-o" style="float: right; padding-top:15px;font-size: 25px ;" (click)='fileupload()'></i> -->
+        <!-- <label for="file" style="float: right;">
+          <i type="file" class="fa fa-file-video-o" style="float: right; padding-top:15px;font-size: 25px;padding-left: 15px ;"></i>
+          <input type="file" id="file" style="display: none" name="image" (change)="createFormDataforvideo($event)" data-original-title="upload photos">
+        </label> -->
+        <label for="file" style="float: right;">
+          <i type="file" class="fa fa-file-image-o" style="float: right; padding-top:15px;font-size: 25px;padding-left: 15px ;"></i>
+          <input type="file" id="file" style="display: none" name="image" (change)="createFormData($event)" data-original-title="upload photos">
+        </label>
+        <!-- <i class=""></i> -->
+<!-- </form> -->
+
+       
+      <!-- <i class="fa fa-paperclip" aria-hidden="true"></i> -->
     </div>
     
     <div class="chat-history" id="chat-history" #scrollMe [scrollTop]="scrollMe.scrollHeight">
@@ -74,14 +92,28 @@
           </div>
         </li>  
       </ul>
-    </div> <!-- end chat-history -->
-    
-    <div class="chat-message clearfix">
-      <textarea #textarea name="message-to-send" #messagevalue id="message-to-send" placeholder ="Type your message" rows="2" (keyup)="myFunction(textarea)"></textarea>
-              
-      <!-- <i class="fa fa-file-o"></i> &nbsp;&nbsp;&nbsp; -->
-      <!-- <i class="fa fa-file-image-o"></i> -->
       
+    </div> <!-- end chat-history -->
+
+
+
+    <div class="abcd">
+      <div  *ngFor='let a of arrayforimage'>
+      <img id="blah" src="{{a}}" />
+      <i class="fa fa-times-circle" id="ic" (click)='rmeoveimage(a)'></i>
+    </div>
+    <div  *ngFor='let ab of arrayforvideo'>
+      <video [src]="ab" controls></video>
+      <i class="fa fa-times-circle" id='ic' (click)='removevideo(ab)'></i>
+  </div>
+    </div>
+
+    <div class="chat-message clearfix">
+      
+      <textarea #textarea name="message-to-send" #messagevalue id="message-to-send" placeholder ="Type your message" rows="2" (keyup)="myFunction(textarea)"></textarea>
       <button (click)="messagesend(messagevalue)">Send</button>
+      
     </div> <!-- end chat-message -->
   </div>
+
+  

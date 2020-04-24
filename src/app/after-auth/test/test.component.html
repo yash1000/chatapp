@@ -1,0 +1,22 @@
+<div id="UploadBox">
+    <h2>Video Uploader</h2>
+    <span id='UploadArea'>
+        <form enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
+            <input type="file" formControlName="image"  (change)="createFormData($event)" id="myfile" name="myfile">
+            <button  type="submit" id='UploadButton' class='Button'>Upload</button>
+    </form>
+        <!-- <label for="FileBox">Choose A File: </label><input formControlName="image" type="file" id="FileBox"  (change)="createFormData($event)" ><br> -->
+
+        
+    </span>
+</div>
+
+
+
+<!-- 
+<form enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
+        <input type="file" formControlName="image"  (change)="createFormData($event)" id="myfile" name="myfile">
+</form> -->
+
+
+<!-- <input type="file" id="siofu_input" /> -->
