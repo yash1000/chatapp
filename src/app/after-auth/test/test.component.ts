@@ -15,6 +15,8 @@ export class TestComponent implements OnInit {
     this.profileForm = this.fb.group({
       image: ['', Validators.required],
     });
+
+    // File-1587731233394.mp4
   }
   // tslint:disable-next-line:member-ordering
   selectedFile: File = null;

@@ -266,6 +266,15 @@ export class ChatComponent implements OnInit {
     }
     if (this.videoobject.length !== 0) {
       console.log(this.videoobject);
+      console.log('fd');
+      for (const file of this.videoobject) {
+        console.log(file);
+        this.fd.append('files[]', file, file.name);
+    }
+      console.log(this.fd);
+      this.api.files(this.fd).subscribe((res) => {
+        console.log(res);
+      });
     }
   }
 
@@ -284,6 +293,8 @@ export class ChatComponent implements OnInit {
       });
     }
   }
+  // tslint:disable-next-line:member-ordering
+  fd = new FormData();
   createFormData(event) {
     this.selectedFile = event.target.files[0] as File;
     const fileName = this.selectedFile.name;
@@ -333,6 +344,10 @@ export class ChatComponent implements OnInit {
           console.log(this.localUrl);
           if (this.arrayforimage.length === 0) {
             this.arrayforimage.push(e.target.result);
+            // console.log('in length 0')
+            const newfile = event.target.files[0] as File;
+            this.videoobject.push(newfile);
+
           } else {
             const getFruit = this.arrayforimage.findIndex(
               (ab) => ab === e.target.result
@@ -341,6 +356,7 @@ export class ChatComponent implements OnInit {
               this.arrayforimage.push(e.target.result);
               const newfile = event.target.files[0] as File;
               this.videoobject.push(newfile);
+              console.log(this.videoobject);
             } else {
               console.log('already exist');
             }
@@ -352,6 +368,7 @@ export class ChatComponent implements OnInit {
       } else {
       }
     }
+
   }
   rmeoveimage(a) {
     const abc = this.arrayforimage.findIndex((ab) => ab === a);

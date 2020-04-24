@@ -5,13 +5,14 @@ var key = require('./key')
 firebase.initializeApp(key);
 const db = admin.firestore();
 const bodyparser = require('body-parser');
+const formidable = require('formidable');
 const app = express();
-// app.use(siofu.router);
 const firebas = require('firebase');
 firebas.initializeApp(key);
 const multer = require('multer');
 app.use(express.static('public'));
 app.use('/images', express.static(__dirname + '/public/upload'));
+app.use('/file', express.static(__dirname + '/public/messagefile'));
 app.use(bodyparser.json());
 const cors = require('cors');
 var http = require('http').createServer(app);
@@ -24,13 +25,7 @@ app.use(bodyparser.urlencoded({
 }))
 const path = require('path');
 app.use(express.static('public'));
-// var siofu = require("socketio-file-upload");
-// var rot = siofu.router;
-// app.use(rot);
-// var fs = require('fs');
-// var exec = require('child_process').exec;
-// var util = require('util');
-
+var fs = require('fs');
 
 //validation for file
 function checkfiletype(file, cb) {
@@ -66,8 +61,46 @@ const upload = multer({
     console.log(file),
       checkfiletype(file, cb);
   }
-}).single('uploadfile')
+}).single('uploadfile');
 
+
+// const  multipart  =  require('connect-multiparty');
+// const  multipartMiddleware  =  multipart({ uploadDir:  './public/messagefile' });
+
+const messagestorage = multer.diskStorage({
+  destination: './public/messagefile',
+  filename: function (req, file, cb) {
+    console.log('yessss')
+    console.log(file);
+    console.log(path.extname(file.originalname));
+    console.log(path.basename(file.originalname));
+    cb(null, 'File' + '-' + Date.now() + path.extname(file.originalname));
+  }
+})
+const uploadnew = multer({
+  storage: messagestorage,
+  limits: {
+    fileSize: 10000000000
+  },
+  fileFilter: function (req, file, cb) {
+    console.log('in function');
+    console.log(file),
+      checkfiletypeofmessage(file, cb);
+  }
+}).array('files[]',10)
+
+
+
+function checkfiletypeofmessage(file, cb) {
+  const filetype = /jpeg|jpg|png|gif|mp4|webm|mpg|mp2/;
+  const extname = filetype.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = filetype.test(file.mimetype);
+  if (mimetype && extname) {
+    return cb(null, true)
+  } else {
+    cb('ERROR:images only');
+  }
+}
 
 
 //registration api for new users with image
@@ -782,7 +815,6 @@ app.post('/removefriend', (req, res) => {
   }
 })
 
-
 //api for message get from db
 app.post('/getmessages', (req, res) => {
   const arrayofmessage = [];
@@ -793,6 +825,11 @@ app.post('/getmessages', (req, res) => {
       arrayofmessage.push(doc.data())
     })
     res.send(arrayofmessage);
+  })
+})
+
+app.post('/file', (req, res) => {
+  uploadnew(req, res, (err) => {
   })
 })
 

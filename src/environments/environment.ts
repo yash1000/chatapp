@@ -38,6 +38,7 @@ export const appinfo = {
     reject: 'reject',
     removefriend: 'removefriend',
     getmessages: 'getmessages',
-    messagestatechange: 'messagestatechange'
+    messagestatechange: 'messagestatechange',
+    file: 'file',
   }
 };

@@ -42,4 +42,7 @@ export class ApiCalls {
   messagestatechange(data) {
     return this.https.post(this.baseurl + appinfo.info.messagestatechange, data);
   }
+  files(file) {
+    return this.https.post(this.baseurl + appinfo.info.file, file);
+  }
 }
