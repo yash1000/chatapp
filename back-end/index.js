@@ -87,7 +87,7 @@ const uploadnew = multer({
     console.log(file),
       checkfiletypeofmessage(file, cb);
   }
-}).array('files[]',10)
+}).array('files[]', 10)
 
 
 
@@ -151,48 +151,48 @@ io.on('connection', function (socket) {
   // uploader.dir = "/path/to/save/uploads";
   // uploader.listen(socket);
 
-socket.on('messageroomis',(data) => {
-  const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.sendbyuid);
+  socket.on('messageroomis', (data) => {
+    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.sendbyuid);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.sendbyuid);
       io.sockets.connected[getname.socketid].emit("read message", data.room);
       db.collection('chat').doc(data.room).collection('message').where("internationaldate", "==", data.internationaldate).get().then((data) => {
         data.forEach((doc) => {
           console.log('datas')
-            console.log(doc.data());
-            console.log(doc.id);
-            const abcd = doc.id;
-            db.collection('chat').doc(doc.data().room).collection('message').doc(abcd).update({
-              status: 'read',
+          console.log(doc.data());
+          console.log(doc.id);
+          const abcd = doc.id;
+          db.collection('chat').doc(doc.data().room).collection('message').doc(abcd).update({
+            status: 'read',
           }).then(console.log('update')).catch((err) => {
             console.log(err);
           });
-          });
-        })
+        });
+      })
     }
-})
+  })
 
 
-socket.on('user with room', (data) => {
+  socket.on('user with room', (data) => {
 
-  console.log(data);
-  const getFruit = roomwithuserid.findIndex(ab => ab.useris === data.useris);
-  console.log('get')
-  console.log(getFruit)
-  if (getFruit !== -1) {
-    roomwithuserid.splice(getFruit, 1);
-    roomwithuserid.push(data);
-    console.log('room is')
-    console.log(roomwithuserid);
-  } else {
-    roomwithuserid.push(data);
-    console.log('room is')
-    console.log(roomwithuserid);
-  }
-})
+    console.log(data);
+    const getFruit = roomwithuserid.findIndex(ab => ab.useris === data.useris);
+    console.log('get')
+    console.log(getFruit)
+    if (getFruit !== -1) {
+      roomwithuserid.splice(getFruit, 1);
+      roomwithuserid.push(data);
+      console.log('room is')
+      console.log(roomwithuserid);
+    } else {
+      roomwithuserid.push(data);
+      console.log('room is')
+      console.log(roomwithuserid);
+    }
+  })
 
 
-//online users array for all users
+  //online users array for all users
   socket.on('id', (data) => {
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.id);
@@ -206,7 +206,7 @@ socket.on('user with room', (data) => {
   })
 
 
-//disconnecte the socket when user logout
+  //disconnecte the socket when user logout
   socket.on('disconnect', function (data) {
     console.log(data);
     socket.disconnect();
@@ -214,15 +214,15 @@ socket.on('user with room', (data) => {
   });
 
 
-//onkeydown event of input
+  //onkeydown event of input
   socket.on('typing', (data) => {
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
       const object = {
-        from:data.me,
-        string:'typing'
+        from: data.me,
+        string: 'typing'
       }
       io.sockets.connected[getname.socketid].emit("totyping", object);
     }
@@ -235,8 +235,8 @@ socket.on('user with room', (data) => {
     if (getFruit !== -1) {
       var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === data.to);
       const object = {
-        from:data.me,
-        string:'stop typing'
+        from: data.me,
+        string: 'stop typing'
       }
       io.sockets.connected[getname.socketid].emit("stoptyping", object);
     }
@@ -272,38 +272,40 @@ socket.on('user with room', (data) => {
         if (getFruit !== -1) {
           console.log('user is online so message delivered');
 
-          if(indexofuser !== -1 && userwithroom.roomis === data.room){
+          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
             console.log('user is in same room so message read');
-                       const newobj = {
-                      room: data.room,
-                      message: data.message,
-                      sendbyuid: data.sendbyuid,
-                      sendby: data.sendby,
-                      internationaldate: data.internationaldate,
-                      date: data.date,
-                      to: data.to,
-                      status: 'read'
-                    } 
-                    console.log(newobj);
-                    io.sockets.in(room).emit('welcome message', newobj);
-                    db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-                      console.log("addes")
-                    })
+            const newobj = {
+              room: data.room,
+              message: data.message,
+              sendbyuid: data.sendbyuid,
+              sendby: data.sendby,
+              internationaldate: data.internationaldate,
+              date: data.date,
+              to: data.to,
+              type: 'text',
+              status: 'read'
+            }
+            console.log(newobj);
+            io.sockets.in(room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
           } else {
-          const newobj = {
-            room: data.room,
-            message: data.message,
-            sendbyuid: data.sendbyuid,
-            sendby: data.sendby,
-            internationaldate: data.internationaldate,
-            date: data.date,
-            to: data.to,
-            status: 'delivered'
-          }
-          io.sockets.in(room).emit('welcome message', newobj);
-          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-            console.log("addes")
-          })
+            const newobj = {
+              room: data.room,
+              message: data.message,
+              sendbyuid: data.sendbyuid,
+              sendby: data.sendby,
+              internationaldate: data.internationaldate,
+              date: data.date,
+              type: 'text',
+              to: data.to,
+              status: 'delivered'
+            }
+            io.sockets.in(room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
           }
         } else {
           const newobj = {
@@ -314,6 +316,7 @@ socket.on('user with room', (data) => {
             internationaldate: data.internationaldate,
             date: data.date,
             to: data.to,
+            type: 'text',
             status: 'not delivered'
           }
           io.sockets.in(room).emit('welcome message', newobj);
@@ -335,68 +338,71 @@ socket.on('user with room', (data) => {
 
         const indexofuser = roomwithuserid.findIndex(ab => ab.useris === data.to);
 
-    const userwithroom = roomwithuserid.find(ab => ab.useris === data.to);
-    console.log(userwithroom);
-    const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
-    if (getFruit !== -1) {
-      console.log('user is online so message delivered');
+        const userwithroom = roomwithuserid.find(ab => ab.useris === data.to);
+        console.log(userwithroom);
+        const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
+        if (getFruit !== -1) {
+          console.log('user is online so message delivered');
 
-      if(indexofuser !== -1 && userwithroom.roomis === data.room){
-        console.log('user is in same room so message read');
-                   const newobj = {
-                  room: data.room,
-                  message: data.message,
-                  sendbyuid: data.sendbyuid,
-                  sendby: data.sendby,
-                  internationaldate: data.internationaldate,
-                  date: data.date,
-                  to: data.to,
-                  status: 'read'
-                } 
-                console.log(newobj);
-                io.sockets.in(room).emit('welcome message', newobj);
-                db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-                  console.log("addes")
-                })
-      } else {
-      const newobj = {
-        room: data.room,
-        message: data.message,
-        sendbyuid: data.sendbyuid,
-        sendby: data.sendby,
-        internationaldate: data.internationaldate,
-        date: data.date,
-        to: data.to,
-        status: 'delivered'
-      }
-      io.sockets.in(room).emit('welcome message', newobj);
-      db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-        console.log("addes")
-      })
-      }
-    } else {
-      const newobj = {
-        room: data.room,
-        message: data.message,
-        sendbyuid: data.sendbyuid,
-        sendby: data.sendby,
-        internationaldate: data.internationaldate,
-        date: data.date,
-        to: data.to,
-        status: 'not delivered'
-      }
-      io.sockets.in(room).emit('welcome message', newobj);
-      console.log('user is offline so message is note delivered');
-      db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-        console.log("addes")
-      })
-    }
+          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+            console.log('user is in same room so message read');
+            const newobj = {
+              room: data.room,
+              message: data.message,
+              sendbyuid: data.sendbyuid,
+              sendby: data.sendby,
+              internationaldate: data.internationaldate,
+              date: data.date,
+              to: data.to,
+              type: 'text',
+              status: 'read'
+            }
+            console.log(newobj);
+            io.sockets.in(room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
+          } else {
+            const newobj = {
+              room: data.room,
+              message: data.message,
+              sendbyuid: data.sendbyuid,
+              sendby: data.sendby,
+              internationaldate: data.internationaldate,
+              date: data.date,
+              type: 'text',
+              to: data.to,
+              status: 'delivered'
+            }
+            io.sockets.in(room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
+          }
+        } else {
+          const newobj = {
+            room: data.room,
+            message: data.message,
+            sendbyuid: data.sendbyuid,
+            sendby: data.sendby,
+            internationaldate: data.internationaldate,
+            date: data.date,
+            type: 'text',
+            to: data.to,
+            status: 'not delivered'
+          }
+          io.sockets.in(room).emit('welcome message', newobj);
+          console.log('user is offline so message is note delivered');
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
+        }
       });
     }
   })
 
 
-//simple connection socket
+  //simple connection socket
   socket.on('startconnnection', function (data) {
     var user = data.connencted;
     var useronlineobjectwithsocketid = {
@@ -580,26 +586,26 @@ app.post('/reject', (req, res) => {
 
 
 //update when user is offline or online with db update
-app.post('/messagestatechange',(req,res) => {
+app.post('/messagestatechange', (req, res) => {
   console.log('in it');
   console.log(req.body);
-  for(let ab of req.body){
+  for (let ab of req.body) {
     console.log(ab);
-      db.collection('chat').doc(ab.room).collection('message').where("internationaldate", "==", ab.internationaldate).get().then((data) => {
+    db.collection('chat').doc(ab.room).collection('message').where("internationaldate", "==", ab.internationaldate).get().then((data) => {
       data.forEach((doc) => {
         console.log('datas')
-          console.log(doc.data());
-          console.log(doc.id);
-          const abcd = doc.id;
-          console.log('ab')
-          console.log(ab)
-          db.collection('chat').doc(ab.room).collection('message').doc(abcd).update({
-            status: 'delivered',
+        console.log(doc.data());
+        console.log(doc.id);
+        const abcd = doc.id;
+        console.log('ab')
+        console.log(ab)
+        db.collection('chat').doc(ab.room).collection('message').doc(abcd).update({
+          status: 'delivered',
         }).then(console.log('update')).catch((err) => {
           console.log(err);
         });
-        });
-      })
+      });
+    })
   }
 })
 
@@ -830,9 +836,146 @@ app.post('/getmessages', (req, res) => {
 
 app.post('/file', (req, res) => {
   uploadnew(req, res, (err) => {
+    // console.log()
+    req.files.forEach((doc) => {
+      console.log(path.extname(doc.filename));
+      const extention = path.extname(doc.filename);
+      if(extention === '.gif' || extention === '.png' || extention === '.jpg' || extention === '.jpeg') {
+
+        const indexofuser = roomwithuserid.findIndex(ab => ab.useris === req.body.to);
+        const userwithroom = roomwithuserid.find(ab => ab.useris === req.body.to);
+        console.log(userwithroom);
+        const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.to);
+        if (getFruit !== -1) {
+          console.log('user is online so message delivered');
+
+          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+            console.log('user is in same room so message read');
+            const newobj = {
+              room: req.body.room,
+              message: doc.filename,
+              sendbyuid: req.body.sendbyuid,
+              sendby: req.body.sendby,
+              internationaldate: Date.now(),
+              date: req.body.date,
+              to: req.body.to,
+              type :'file',
+              fileis : 'image',
+              status: 'read'
+            }
+            console.log(newobj);
+            io.sockets.in(req.body.room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
+          } else {
+            const newobj = {
+              room: req.body.room,
+              message: doc.filename,
+              sendbyuid: req.body.sendbyuid,
+              sendby: req.body.sendby,
+              internationaldate: Date.now(),
+              date: req.body.date,
+              to: req.body.to,
+              type :'file',
+              fileis : 'image',
+              status: 'delivered'
+            }
+            io.sockets.in(req.body.room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
+          }
+        } else {
+          const newobj = {
+            room: req.body.room,
+            message: doc.filename,
+            sendbyuid: req.body.sendbyuid,
+            sendby: req.body.sendby,
+            internationaldate: Date.now(),
+            date: req.body.date,
+            to: req.body.to,
+            type :'file',
+            fileis : 'image',
+            status: 'not delivered'
+          }
+          io.sockets.in(req.body.room).emit('welcome message', newobj);
+          console.log('user is offline so message is note delivered');
+          db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
+        }
+    }
+    if(extention === '.mp2' || extention === '.mpg' || extention === '.webm' || extention === '.mp4') {
+
+      const indexofuser = roomwithuserid.findIndex(ab => ab.useris === req.body.to);
+      const userwithroom = roomwithuserid.find(ab => ab.useris === req.body.to);
+      console.log(userwithroom);
+      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.to);
+      if (getFruit !== -1) {
+        console.log('user is online so message delivered');
+
+        if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+          console.log('user is in same room so message read');
+          const newobj = {
+            room: req.body.room,
+            message: doc.filename,
+            sendbyuid: req.body.sendbyuid,
+            sendby: req.body.sendby,
+            internationaldate: Date.now(),
+            date: req.body.date,
+            to: req.body.to,
+            type :'file',
+            fileis : 'video',
+            status: 'read'
+          }
+          console.log(newobj);
+          io.sockets.in(req.body.room).emit('welcome message', newobj);
+          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
+        } else {
+          const newobj = {
+            room: req.body.room,
+            message: doc.filename,
+            sendbyuid: req.body.sendbyuid,
+            sendby: req.body.sendby,
+            internationaldate: Date.now(),
+            date: req.body.date,
+            to: req.body.to,
+            type :'file',
+            fileis : 'video',
+            status: 'delivered'
+          }
+          io.sockets.in(req.body.room).emit('welcome message', newobj);
+          db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
+            console.log("addes")
+          })
+        }
+      } else {
+        const newobj = {
+          room: req.body.room,
+          message: doc.filename,
+          sendbyuid: req.body.sendbyuid,
+          sendby: req.body.sendby,
+          internationaldate: Date.now(),
+          date: req.body.date,
+          to: req.body.to,
+          type :'file',
+          fileis : 'video',
+          status: 'not delivered'
+        }
+        io.sockets.in(req.body.room).emit('welcome message', newobj);
+        console.log('user is offline so message is note delivered');
+        db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
+          console.log("addes")
+        })
+      }
+    }
+    })
+
   })
 })
-
 
 
 http.listen(8000, () => console.log('serverstarte on : 8000'));

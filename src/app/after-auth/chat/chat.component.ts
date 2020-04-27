@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
 import { DomSanitizer } from '@angular/platform-browser';
-import { clearScreenDown } from 'readline';
 declare const $: any;
 @Component({
   selector: 'app-chat',
@@ -117,6 +116,7 @@ export class ChatComponent implements OnInit {
    * @param image image of the friend
    */
   changecomponent(id, name, image) {
+    console.log(this.videoobject);
     const socket = io('http://localhost:8000');
 
     /**
@@ -261,20 +261,45 @@ export class ChatComponent implements OnInit {
           internationaldate: milisecond,
           date: `${h}:${m}:${s}`,
           to: this.messagesendid,
+          type: 'text'
         });
       });
     }
-    if (this.videoobject.length !== 0) {
+    if (this.videoobject.length !== 0 && this.videoobject.length !== null) {
       console.log(this.videoobject);
       console.log('fd');
-      for (const file of this.videoobject) {
+      const d = new Date();
+      const h = d.getHours();
+      const m = d.getMinutes();
+      const s = d.getSeconds();
+      const response = this.videoobject.filter((n) => n.room === this.currentroom);
+      console.log(response);
+      for (const file of response) {
         console.log(file);
-        this.fd.append('files[]', file, file.name);
+        this.fd.append('files[]', file.newfile, file.newfile.name);
     }
+      this.fd.append('room', this.currentroom);
+      this.fd.append('sendbyuid', this.localdata.uid);
+      this.fd.append('sendby', this.localdata.displayName);
+      this.fd.append('date', `${h}:${m}:${s}`);
+      this.fd.append('to', this.messagesendid);
       console.log(this.fd);
       this.api.files(this.fd).subscribe((res) => {
         console.log(res);
+
       });
+      const newarray = this.videoobject.filter((n) => n.room !== this.currentroom);
+      console.log(newarray);
+      this.videoobject = newarray;
+      console.log(this.videoobject);
+      const newarrayforvideo = this.arrayforvideo.filter((n) => n.room !== this.currentroom);
+      console.log(newarrayforvideo);
+      this.arrayforvideo = newarrayforvideo;
+      const newarrayforimage = this.arrayforimage.filter((n) => n.room !== this.currentroom);
+      console.log(newarrayforimage);
+      this.arrayforimage = newarrayforimage;
+    } else {
+      console.log('please enter some files');
     }
   }
 
@@ -314,8 +339,14 @@ export class ChatComponent implements OnInit {
         if (getFruit !== -1) {
           console.log('already exist');
         } else {
-          const newfile = event.target.files[0] as File;
-          this.videoobject.push(newfile);
+          const newfileobject = event.target.files[0] as File;
+          const object = {
+            newfile: newfileobject,
+            room: this.currentroom,
+          };
+          this.videoobject.push(object);
+          console.log('room of video');
+          console.log(this.videoobject);
           console.log(this.videoobject);
           const file = event.target.files[0] as File;
           const b = URL.createObjectURL(file);
@@ -324,7 +355,11 @@ export class ChatComponent implements OnInit {
           );
           console.log(sanitizedUrl);
           console.log('yes');
-          this.arrayforvideo.push(sanitizedUrl);
+          const objectofvideourl = {
+            url: sanitizedUrl,
+            room: this.currentroom,
+          };
+          this.arrayforvideo.push(objectofvideourl);
           console.log('array');
           console.log(this.arrayforvideo);
           this.abcd = sanitizedUrl;
@@ -343,19 +378,35 @@ export class ChatComponent implements OnInit {
           this.localUrl = e.target.result;
           console.log(this.localUrl);
           if (this.arrayforimage.length === 0) {
-            this.arrayforimage.push(e.target.result);
+            const objectofimage = {
+              img: e.target.result,
+              room: this.currentroom,
+            };
+            this.arrayforimage.push(objectofimage);
             // console.log('in length 0')
-            const newfile = event.target.files[0] as File;
-            this.videoobject.push(newfile);
+            const newfileobject = event.target.files[0] as File;
+            const object = {
+              newfile: newfileobject,
+              room: this.currentroom,
+            };
+            this.videoobject.push(object);
 
           } else {
             const getFruit = this.arrayforimage.findIndex(
               (ab) => ab === e.target.result
             );
             if (getFruit === -1) {
-              this.arrayforimage.push(e.target.result);
-              const newfile = event.target.files[0] as File;
-              this.videoobject.push(newfile);
+              const objectofimage = {
+                img: e.target.result,
+                room: this.currentroom,
+              };
+              this.arrayforimage.push(objectofimage);
+              const newfileobject = event.target.files[0] as File;
+              const object = {
+                newfile: newfileobject,
+                room: this.currentroom,
+              };
+              this.videoobject.push(object);
               console.log(this.videoobject);
             } else {
               console.log('already exist');

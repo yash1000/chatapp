@@ -13,7 +13,7 @@
     <div *ngIf='!(datas.length === 0); else new'>
       <ul class="list" *ngFor='let data of datas'>
         <li class="clearfix" (click)="changecomponent(data.uid,data.name,data.image)">
-          <img src='http://localhost:8000/images/{{data.image}}' alt="avatar" />
+          <img class="img1" src='http://localhost:8000/images/{{data.image}}' alt="avatar" />
           <div class="about">
             <div class="name">{{data.name}}</div>
             <div *ngFor='let n of onlineusers'>
@@ -38,7 +38,7 @@
 
   
     <div class="chat-header clearfix">
-      <img src="http://localhost:8000/images/{{img}}" alt="avatar" />
+      <img class="img1" src="http://localhost:8000/images/{{img}}" alt="avatar" />
       
       <div class="chat-about">
         <div class="chat-with">{{chatname}}</div>
@@ -74,7 +74,19 @@
             <span class="message-data-name" >{{message.sendby}}</span> 
           </div>
           <div class="message other-message float-right">
-           {{message.message}}
+            <div *ngIf="message.type==='file' && message.fileis==='image'">
+                <img id='messageimg' src='http://localhost:8000/file/{{message.message}}'/>
+                <!-- {{message.message}}
+                {{message.type}}
+                {{message.fileis}} -->
+            </div>
+              <div *ngIf="message.type==='file' && message.fileis==='video'">
+                <video id="messagevdo" src="http://localhost:8000/file/{{message.message}}" controls></video>
+                <!-- {{message.message}}
+                {{message.type}}
+                {{message.fileis}} -->
+              </div>
+              <span *ngIf="message.type==='text'"> {{message.message}}</span>
            <img src="../../../assets/images/check-double-solid.svg" class="svg" *ngIf="message.status==='delivered'">
           <img src="../../../assets/images/check-square-solid.svg" class="svg" *ngIf="message.status==='read'"> 
            <img src="../../../assets/images/check-solid.svg" class="svg" *ngIf="message.status==='not delivered'">
@@ -88,7 +100,18 @@
            
           </div>
           <div class="message my-message">
-            {{message.message}}
+            <!-- <div *ngIf='message.type===file'> -->
+              <div *ngIf="message.type==='file' && message.fileis==='image'">
+                <img id="blah" src='http://localhost:8000/file/{{message.message}}'/>
+              </div>
+              <div *ngIf="message.type==='file' && message.fileis==='video'">
+                <video id="messagevdo" src="http://localhost:8000/file/{{message.message}}" controls></video>
+                <!-- {{message.message}}
+                {{message.type}}
+                {{message.fileis}} -->
+              </div>
+            <!-- </div> -->
+           <span *ngIf="message.type==='text'"> {{message.message}}</span>
           </div>
         </li>  
       </ul>
@@ -99,12 +122,12 @@
 
     <div class="abcd">
       <div  *ngFor='let a of arrayforimage'>
-      <img id="blah" src="{{a}}" />
-      <i class="fa fa-times-circle" id="ic" (click)='rmeoveimage(a)'></i>
+      <img id="blah" src="{{a.img}}" *ngIf='currentroom===a.room' />
+      <i class="fa fa-times-circle" id="ic" *ngIf='currentroom===a.room' (click)='rmeoveimage(a)'></i>
     </div>
     <div  *ngFor='let ab of arrayforvideo'>
-      <video [src]="ab" controls></video>
-      <i class="fa fa-times-circle" id='ic' (click)='removevideo(ab)'></i>
+      <video [src]="ab.url" controls *ngIf='currentroom===ab.room'></video>
+      <i class="fa fa-times-circle" id='ic'  *ngIf='currentroom===ab.room' (click)='removevideo(ab)'></i>
   </div>
     </div>
 
