@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { ApiCalls } from '../../services/apicalls.service';
+import { SocketServiceService } from '../../services/socket-service.service';
 @Component({
   selector: 'app-request',
   templateUrl: './request.component.html',
@@ -11,7 +12,7 @@ export class RequestComponent implements OnInit {
   objectofid: any;
   datas = [];
   newdatas = [];
-  constructor(private api: ApiCalls) {}
+  constructor(private api: ApiCalls, private socketurl: SocketServiceService) {}
 
   ngOnInit() {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
@@ -20,7 +21,7 @@ export class RequestComponent implements OnInit {
     this.objectofid = {
       id: this.localdata.uid,
     };
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
 
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', (data) => {
@@ -63,7 +64,7 @@ export class RequestComponent implements OnInit {
       to: this.localdata.uid,
       from: id,
     };
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     socket.emit('acceptrequest', {
       to: this.localdata.uid,
       from: id,
@@ -85,7 +86,7 @@ export class RequestComponent implements OnInit {
     this.api.reject(idobject).subscribe((data) => {
       console.log(data);
     });
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     socket.emit('buttonshow', {
       message: 'buttondiabe',
       from: id,

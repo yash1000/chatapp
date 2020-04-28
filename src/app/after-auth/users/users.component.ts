@@ -1,6 +1,7 @@
 import { Component, OnInit, AfterContentChecked, AfterContentInit, AfterViewInit, OnChanges } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { SocketServiceService } from '../../services/socket-service.service';
 import * as $ from 'jquery';
 import { NgxUiLoaderService } from 'ngx-ui-loader';
 @Component({
@@ -16,7 +17,7 @@ export class UsersComponent implements OnInit {
   datas: any;
   accept: any;
   newdata: any;
-  constructor(private api: ApiCalls, private ngxService: NgxUiLoaderService) {}
+  constructor(private api: ApiCalls, private ngxService: NgxUiLoaderService, private socketurl: SocketServiceService) {}
 
 
   ngOnInit() {
@@ -51,7 +52,7 @@ export class UsersComponent implements OnInit {
      }, 1000);
       }
    });
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('newbutton', data => {
     console.log(data);
@@ -69,7 +70,7 @@ export class UsersComponent implements OnInit {
    * @param id to whom the request is to be send
    */
   requestsend(id) {
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     socket.emit('request', {
       to: id,
       from: this.uid.uid,

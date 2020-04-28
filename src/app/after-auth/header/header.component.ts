@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import * as io from 'socket.io-client';
 import { Router } from '@angular/router';
+import { SocketServiceService } from '../../services/socket-service.service';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
@@ -12,7 +13,7 @@ export class HeaderComponent implements OnInit {
   uid: any;
   img1: string;
 
-  constructor( private routes: Router) { }
+  constructor( private routes: Router, private socketurl: SocketServiceService) { }
 
   ngOnInit() {
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
@@ -20,14 +21,14 @@ export class HeaderComponent implements OnInit {
     this.img1 = 'http://localhost:8000/images/' + this.localdata.image;
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
   }
 
   /**
    * on lotggout loclstorage clear and socket disconnected
    */
   logout() {
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     socket.emit('id', {id: this.localdata.uid});
     socket.emit('disconnect');
     localStorage.removeItem('accessToken');

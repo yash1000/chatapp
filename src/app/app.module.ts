@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { LoginComponent } from './pre-auth/login/login.component';
 import { ApiCalls } from './services/apicalls.service';
+import { SocketServiceService } from './services/socket-service.service';
 import { DashboardComponent } from './after-auth/dashboard/dashboard.component';
 import { RegistrationComponent } from './pre-auth/registration/registration.component';
 import { AuthGuard } from './services/authService.service';
@@ -41,6 +42,7 @@ import { TestComponent } from './after-auth/test/test.component';
     HttpClientModule,
   ],
   providers: [ApiCalls,
+    SocketServiceService,
     AuthGuard,
     SecurePage],
   bootstrap: [AppComponent]

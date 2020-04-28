@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
+import { SocketServiceService } from '../../services/socket-service.service';
 @Component({
   selector: 'app-friends',
   templateUrl: './friends.component.html',
@@ -11,10 +12,10 @@ export class FriendsComponent implements OnInit {
   objectofid: { id: any; };
   datas = [];
 
-  constructor( private api: ApiCalls) { }
+  constructor( private api: ApiCalls, private socketurl: SocketServiceService) { }
 
   ngOnInit() {
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     socket.emit('startconnnection', { connencted: this.localdata.uid });
 

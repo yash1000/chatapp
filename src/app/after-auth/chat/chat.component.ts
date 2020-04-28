@@ -3,6 +3,7 @@ import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
 import { DomSanitizer } from '@angular/platform-browser';
 declare const $: any;
+import { SocketServiceService } from '../../services/socket-service.service';
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -33,10 +34,9 @@ export class ChatComponent implements OnInit {
   localUrl: any;
   abcd: any;
 
-  constructor(private api: ApiCalls, private sanitizer: DomSanitizer) {}
-
+  constructor(private api: ApiCalls, private sanitizer: DomSanitizer, private socketurl: SocketServiceService) {}
   ngOnInit() {
-    // console.log(this.arrayforimage.length);
+
     /**
      * access to local user data
      */
@@ -50,6 +50,7 @@ export class ChatComponent implements OnInit {
      * api for get friend list for sidebar
      * @param this.objectofid is user id for database search
      */
+
     this.api.getfriends(this.objectofid).subscribe((res: any) => {
       console.log(res);
       // tslint:disable-next-line:quotemark
@@ -66,7 +67,8 @@ export class ChatComponent implements OnInit {
     /**
      * socket connection for online user , message state change , typing
      */
-    const socket = io('http://localhost:8000');
+
+    const socket = this.socketurl.socket;
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', (data) => {
       console.log(data.online);
@@ -115,13 +117,15 @@ export class ChatComponent implements OnInit {
    * @param name name of the friend
    * @param image image of the friend
    */
+
   changecomponent(id, name, image) {
     console.log(this.videoobject);
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
 
     /**
      * message settinges
      */
+
     this.messagesendid = id;
     this.chatname = name;
     this.img = image;
@@ -250,7 +254,7 @@ export class ChatComponent implements OnInit {
       const h = d.getHours();
       const m = d.getMinutes();
       const s = d.getSeconds();
-      const socket = io('http://localhost:8000');
+      const socket = this.socketurl.socket;
       socket.emit('new', { me: this.localdata.uid, to: this.messagesendid });
       socket.on('room is', (data) => {
         socket.emit(data, {
@@ -308,7 +312,7 @@ export class ChatComponent implements OnInit {
    * @param e if user is typing that is on keydown
    */
   myFunction(e) {
-    const socket = io('http://localhost:8000');
+    const socket = this.socketurl.socket;
     if (e.value !== '') {
       socket.emit('typing', { me: this.localdata.uid, to: this.messagesendid });
     } else {

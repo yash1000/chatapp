@@ -840,7 +840,7 @@ app.post('/file', (req, res) => {
     req.files.forEach((doc) => {
       console.log(path.extname(doc.filename));
       const extention = path.extname(doc.filename);
-      if(extention === '.gif' || extention === '.png' || extention === '.jpg' || extention === '.jpeg') {
+      if (extention === '.gif' || extention === '.png' || extention === '.jpg' || extention === '.jpeg') {
 
         const indexofuser = roomwithuserid.findIndex(ab => ab.useris === req.body.to);
         const userwithroom = roomwithuserid.find(ab => ab.useris === req.body.to);
@@ -859,8 +859,8 @@ app.post('/file', (req, res) => {
               internationaldate: Date.now(),
               date: req.body.date,
               to: req.body.to,
-              type :'file',
-              fileis : 'image',
+              type: 'file',
+              fileis: 'image',
               status: 'read'
             }
             console.log(newobj);
@@ -877,8 +877,8 @@ app.post('/file', (req, res) => {
               internationaldate: Date.now(),
               date: req.body.date,
               to: req.body.to,
-              type :'file',
-              fileis : 'image',
+              type: 'file',
+              fileis: 'image',
               status: 'delivered'
             }
             io.sockets.in(req.body.room).emit('welcome message', newobj);
@@ -895,8 +895,8 @@ app.post('/file', (req, res) => {
             internationaldate: Date.now(),
             date: req.body.date,
             to: req.body.to,
-            type :'file',
-            fileis : 'image',
+            type: 'file',
+            fileis: 'image',
             status: 'not delivered'
           }
           io.sockets.in(req.body.room).emit('welcome message', newobj);
@@ -905,35 +905,53 @@ app.post('/file', (req, res) => {
             console.log("addes")
           })
         }
-    }
-    if(extention === '.mp2' || extention === '.mpg' || extention === '.webm' || extention === '.mp4') {
+      }
+      if (extention === '.mp2' || extention === '.mpg' || extention === '.webm' || extention === '.mp4') {
 
-      const indexofuser = roomwithuserid.findIndex(ab => ab.useris === req.body.to);
-      const userwithroom = roomwithuserid.find(ab => ab.useris === req.body.to);
-      console.log(userwithroom);
-      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.to);
-      if (getFruit !== -1) {
-        console.log('user is online so message delivered');
+        const indexofuser = roomwithuserid.findIndex(ab => ab.useris === req.body.to);
+        const userwithroom = roomwithuserid.find(ab => ab.useris === req.body.to);
+        console.log(userwithroom);
+        const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === req.body.to);
+        if (getFruit !== -1) {
+          console.log('user is online so message delivered');
 
-        if (indexofuser !== -1 && userwithroom.roomis === data.room) {
-          console.log('user is in same room so message read');
-          const newobj = {
-            room: req.body.room,
-            message: doc.filename,
-            sendbyuid: req.body.sendbyuid,
-            sendby: req.body.sendby,
-            internationaldate: Date.now(),
-            date: req.body.date,
-            to: req.body.to,
-            type :'file',
-            fileis : 'video',
-            status: 'read'
+          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+            console.log('user is in same room so message read');
+            const newobj = {
+              room: req.body.room,
+              message: doc.filename,
+              sendbyuid: req.body.sendbyuid,
+              sendby: req.body.sendby,
+              internationaldate: Date.now(),
+              date: req.body.date,
+              to: req.body.to,
+              type: 'file',
+              fileis: 'video',
+              status: 'read'
+            }
+            console.log(newobj);
+            io.sockets.in(req.body.room).emit('welcome message', newobj);
+            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
+          } else {
+            const newobj = {
+              room: req.body.room,
+              message: doc.filename,
+              sendbyuid: req.body.sendbyuid,
+              sendby: req.body.sendby,
+              internationaldate: Date.now(),
+              date: req.body.date,
+              to: req.body.to,
+              type: 'file',
+              fileis: 'video',
+              status: 'delivered'
+            }
+            io.sockets.in(req.body.room).emit('welcome message', newobj);
+            db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
+              console.log("addes")
+            })
           }
-          console.log(newobj);
-          io.sockets.in(req.body.room).emit('welcome message', newobj);
-          db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
-            console.log("addes")
-          })
         } else {
           const newobj = {
             room: req.body.room,
@@ -943,37 +961,18 @@ app.post('/file', (req, res) => {
             internationaldate: Date.now(),
             date: req.body.date,
             to: req.body.to,
-            type :'file',
-            fileis : 'video',
-            status: 'delivered'
+            type: 'file',
+            fileis: 'video',
+            status: 'not delivered'
           }
           io.sockets.in(req.body.room).emit('welcome message', newobj);
+          console.log('user is offline so message is note delivered');
           db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
             console.log("addes")
           })
         }
-      } else {
-        const newobj = {
-          room: req.body.room,
-          message: doc.filename,
-          sendbyuid: req.body.sendbyuid,
-          sendby: req.body.sendby,
-          internationaldate: Date.now(),
-          date: req.body.date,
-          to: req.body.to,
-          type :'file',
-          fileis : 'video',
-          status: 'not delivered'
-        }
-        io.sockets.in(req.body.room).emit('welcome message', newobj);
-        console.log('user is offline so message is note delivered');
-        db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
-          console.log("addes")
-        })
       }
-    }
     })
-
   })
 })
 
