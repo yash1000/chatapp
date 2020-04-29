@@ -52,7 +52,7 @@ export class UsersComponent implements OnInit {
      }, 1000);
       }
    });
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('newbutton', data => {
     console.log(data);
@@ -70,7 +70,7 @@ export class UsersComponent implements OnInit {
    * @param id to whom the request is to be send
    */
   requestsend(id) {
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('request', {
       to: id,
       from: this.uid.uid,

@@ -47,7 +47,7 @@ padding-left: 0px !important;
     padding: 14px;
     color: white;
     background: #6A6C75;
-    width: 100%;
+    width: 88%;
     font-size: 14px;
   }
   
@@ -332,4 +332,25 @@ video{
   width: 100% !important;  
   padding: 0px !important;
   margin: 0px !important;
+}
+.dropdownimage{
+  height: 100px;
+  width: 150px;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 30px;
+}
+.nameofdropdown{
+  display: inline-block;
+  padding: 10px;
+}
+
+.input1{
+  height: 16px;
+  width: 20px;
+}
+.nameinput{
+  height: 40px;
+  width: 100%;
+  border: 1px solid black;
 }

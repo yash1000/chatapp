@@ -21,14 +21,14 @@ export class HeaderComponent implements OnInit {
     this.img1 = 'http://localhost:8000/images/' + this.localdata.image;
     this.displayname = this.localdata.displayName;
     this.uid = this.localdata.uid;
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
   }
 
   /**
    * on lotggout loclstorage clear and socket disconnected
    */
   logout() {
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('id', {id: this.localdata.uid});
     socket.emit('disconnect');
     localStorage.removeItem('accessToken');

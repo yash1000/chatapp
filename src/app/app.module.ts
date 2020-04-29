@@ -12,6 +12,8 @@ import { RegistrationComponent } from './pre-auth/registration/registration.comp
 import { AuthGuard } from './services/authService.service';
 import { NgxUiLoaderModule } from 'ngx-ui-loader';
 import { SecurePage } from './services/protected.service';
+import {NgbPaginationModule, NgbAlertModule} from '@ng-bootstrap/ng-bootstrap';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { ChatComponent } from './after-auth/chat/chat.component';
 import { UsersComponent } from './after-auth/users/users.component';
 import { RequestComponent } from './after-auth/request/request.component';
@@ -36,9 +38,9 @@ import { TestComponent } from './after-auth/test/test.component';
     BrowserModule,
     ReactiveFormsModule,
     NgxUiLoaderModule,
-    // NgHttpLoaderModule.forRoot(),
-    // NgHttpLoaderModule.forRoot(),
+    NgbPaginationModule, NgbAlertModule,
     AppRoutingModule,
+    NgbModule,
     HttpClientModule,
   ],
   providers: [ApiCalls,

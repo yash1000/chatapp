@@ -723,9 +723,11 @@ app.post('/getrequestlist', (req, res) => {
 //user friend list
 var arrayoffriend = [];
 app.post('/getfriends', (req, res) => {
+  console.log('ll')
   console.log(req.body);
   db.collection('users').doc(req.body.id).get().then(data => {
     console.log(data.data().friendList.length);
+    console.log(data.data().friendList)
     var newcount = data.data().friendList.length;
     if (newcount === 0) {
       res.json("sorry you don't have friends");
@@ -975,6 +977,75 @@ app.post('/file', (req, res) => {
     })
   })
 })
+app.post('/groupdetail',(req,res) => {
+  console.log(req.body);
+  console.log('ppppppppppppppppp')
+  upload(req, res, (err) => {
+    console.log('pp')
+    console.log(req.file);
+    var emp = ({
+      adminname: req.body.adminname,
+      groupname: req.body.groupname,
+      adminid: req.body.adminid,
+      filename: req.file.filename,
+      members :req.body.members,
+      createdat : Date.now()
+    });
+    
+    console.log(emp)
+    const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
+      db.collection('group').add(emp).then((doc) => {
+        console.log("oh yeh");
+        console.log(doc.id)
+        for(const id of emp.members){
+        db.collection('users').doc(id).update({
+          "groups": arrayUnion(doc.id)
+        }).then(() => {
 
+        })
+        }
+      }).catch(err => {
+        console.log("oh no")
+        console.log(err);
+      })
+    })
+})
+app.post('/getgroup', (req,res) => {
+  console.log('ingroupid')
+  console.log(req.body.id);
+  var arrayofgroup = [];
+
+  db.collection('users').doc(req.body.id).get().then(data => {
+    console.log(data.data().groups.length);
+    console.log(data.data().groups)
+    var newcount = data.data().groups.length;
+    if (newcount === 0) {
+      res.json("sorry you don't have friends");
+    } else {
+      for (let i = 0; i < newcount; i++) {
+        db.collection('group').doc(data.data().groups[i]).get().then(data => {
+          const newdata = {
+            uid: data.id,
+            adminid: data.data().adminid,
+            adminname: data.data().adminname,
+            createdat: data.data().createdat,
+            filename: data.data().filename,
+            groupname: data.data().groupname,
+            members: data.data().members,
+            
+          }
+          arrayofgroup.push(newdata);
+          if (arrayofgroup.length == newcount) {
+            console.log('array of friends')
+            console.log(arrayofgroup);
+            res.send(arrayofgroup);
+          }
+        })
+      }
+    }
+  }).catch(err => {
+    console.log(err)
+  })
+})
 
 http.listen(8000, () => console.log('serverstarte on : 8000'));

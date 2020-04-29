@@ -15,7 +15,7 @@ export class FriendsComponent implements OnInit {
   constructor( private api: ApiCalls, private socketurl: SocketServiceService) { }
 
   ngOnInit() {
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     this.localdata = JSON.parse(localStorage.getItem('accessToken'));
     socket.emit('startconnnection', { connencted: this.localdata.uid });
 

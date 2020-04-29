@@ -45,4 +45,10 @@ export class ApiCalls {
   files(file) {
     return this.https.post(this.baseurl + appinfo.info.file, file);
   }
+  groupdetail(formdata) {
+    return this.https.post(this.baseurl + appinfo.info.groupdetail, formdata);
+  }
+  getgroup(id) {
+    return this.https.post(this.baseurl + appinfo.info.getgroup, id);
+  }
 }

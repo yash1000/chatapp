@@ -21,7 +21,7 @@ export class RequestComponent implements OnInit {
     this.objectofid = {
       id: this.localdata.uid,
     };
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
 
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', (data) => {
@@ -64,7 +64,7 @@ export class RequestComponent implements OnInit {
       to: this.localdata.uid,
       from: id,
     };
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('acceptrequest', {
       to: this.localdata.uid,
       from: id,
@@ -86,7 +86,7 @@ export class RequestComponent implements OnInit {
     this.api.reject(idobject).subscribe((data) => {
       console.log(data);
     });
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('buttonshow', {
       message: 'buttondiabe',
       from: id,

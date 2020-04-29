@@ -40,5 +40,7 @@ export const appinfo = {
     getmessages: 'getmessages',
     messagestatechange: 'messagestatechange',
     file: 'file',
+    groupdetail: 'groupdetail',
+    getgroup: 'getgroup'
   }
 };

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {NgbModal, ModalDismissReasons, NgbModalConfig} from '@ng-bootstrap/ng-bootstrap';
 import { ApiCalls } from '../../services/apicalls.service';
 import * as io from 'socket.io-client';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -8,6 +9,7 @@ import { SocketServiceService } from '../../services/socket-service.service';
   selector: 'app-chat',
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss'],
+  providers: [NgbModalConfig, NgbModal]
 })
 export class ChatComponent implements OnInit {
   localdata: any;
@@ -33,8 +35,12 @@ export class ChatComponent implements OnInit {
   selectedFile: File;
   localUrl: any;
   abcd: any;
+  closeResult: string;
+  grouparray = [];
+  selectedFileforgroup: File;
 
-  constructor(private api: ApiCalls, private sanitizer: DomSanitizer, private socketurl: SocketServiceService) {}
+  // tslint:disable-next-line:max-line-length
+  constructor(config: NgbModalConfig , private api: ApiCalls, private modalService: NgbModal , private sanitizer: DomSanitizer, private socketurl: SocketServiceService) {}
   ngOnInit() {
 
     /**
@@ -63,12 +69,25 @@ export class ChatComponent implements OnInit {
         }
       }
     });
+    this.api.getgroup(this.objectofid).subscribe((res: any) => {
+      console.log('res of group');
+      console.log(res);
+
+      for (const group of res) {
+        const newdata = {
+          uid: group.uid,
+          name: group.groupname,
+          image: group.filename
+        };
+        this.datas.push(newdata);
+      }
+    });
 
     /**
      * socket connection for online user , message state change , typing
      */
 
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     socket.emit('startconnnection', { connencted: this.localdata.uid });
     socket.on('online users', (data) => {
       console.log(data.online);
@@ -120,7 +139,7 @@ export class ChatComponent implements OnInit {
 
   changecomponent(id, name, image) {
     console.log(this.videoobject);
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
 
     /**
      * message settinges
@@ -254,7 +273,7 @@ export class ChatComponent implements OnInit {
       const h = d.getHours();
       const m = d.getMinutes();
       const s = d.getSeconds();
-      const socket = this.socketurl.socket;
+      const socket = io('http://localhost:8000');
       socket.emit('new', { me: this.localdata.uid, to: this.messagesendid });
       socket.on('room is', (data) => {
         socket.emit(data, {
@@ -312,7 +331,7 @@ export class ChatComponent implements OnInit {
    * @param e if user is typing that is on keydown
    */
   myFunction(e) {
-    const socket = this.socketurl.socket;
+    const socket = io('http://localhost:8000');
     if (e.value !== '') {
       socket.emit('typing', { me: this.localdata.uid, to: this.messagesendid });
     } else {
@@ -444,4 +463,45 @@ export class ChatComponent implements OnInit {
     }
     console.log(this.arrayforvideo);
   }
+  open(content) {
+    this.modalService.open(content);
+  }
+  chacked(id, value) {
+    console.log(id);
+    console.log(value);
+    console.log(value.target.checked);
+    // console.log(value.value);
+    if (value.target.checked === true) {
+      this.grouparray.push(id);
+    } else if (value.target.checked === false) {
+      const a = this.grouparray.findIndex(ab => ab === id);
+      this.grouparray.splice(a, 1);
+    }
+    console.log(this.grouparray);
+  }
+  // tslint:disable-next-line:member-ordering
+  groupformdata = new FormData();
+  createFormDataforgroupimage(event) {
+    this.selectedFileforgroup = event.target.files[0] as File;
+    }
+    closeandsenddata(a) {
+      this.groupformdata.append('uploadfile', this.selectedFileforgroup, this.selectedFileforgroup.name);
+      this.groupformdata.append('groupname', a.value);
+      this.groupformdata.append('adminname', this.localdata.displayName);
+      this.grouparray.push(this.localdata.uid);
+      for (const abc of this.grouparray) {
+      this.groupformdata.append('members[]', abc);
+      }
+      this.groupformdata.append('adminid', this.localdata.uid);
+      this.api.groupdetail(this.groupformdata).subscribe(res => {
+        console.log('ioioioio');
+      });
+      // const newdata = {
+      //   uid: group.uid,
+      //   name: group.groupname,
+      //   image: group.filename
+      // };
+      // this.datas.push(newdata);
+      this.modalService.dismissAll();
+    }
 }
