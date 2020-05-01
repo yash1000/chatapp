@@ -5,6 +5,7 @@ import * as io from 'socket.io-client';
 import { DomSanitizer } from '@angular/platform-browser';
 declare const $: any;
 import { SocketServiceService } from '../../services/socket-service.service';
+// import { simple}
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.component.html',
@@ -38,9 +39,10 @@ export class ChatComponent implements OnInit {
   closeResult: string;
   grouparray = [];
   selectedFileforgroup: File;
+  grouproomid: any;
 
   // tslint:disable-next-line:max-line-length
-  constructor(config: NgbModalConfig , private api: ApiCalls, private modalService: NgbModal , private sanitizer: DomSanitizer, private socketurl: SocketServiceService) {}
+  constructor( private api: ApiCalls, private modalService: NgbModal , private sanitizer: DomSanitizer, private socketurl: SocketServiceService) {}
   ngOnInit() {
 
     /**
@@ -77,7 +79,8 @@ export class ChatComponent implements OnInit {
         const newdata = {
           uid: group.uid,
           name: group.groupname,
-          image: group.filename
+          image: group.filename,
+          groupid: group.uid
         };
         this.datas.push(newdata);
       }
@@ -121,6 +124,19 @@ export class ChatComponent implements OnInit {
       this.newname = data.from;
     });
 
+    socket.on('group', (data) => {
+      console.log('iiiiiiiii');
+      console.log(data);
+      const newdata = {
+        uid: data.uid,
+        name: data.groupname,
+        image: data.filename,
+        groupid: data.uid
+      };
+      this.datas.push(newdata);
+    });
+
+
     socket.on('read message', (data) => {
       for (const message of this.newmessagearray) {
         if (message.room === data) {
@@ -128,6 +144,14 @@ export class ChatComponent implements OnInit {
         }
       }
     });
+    setTimeout(() => {
+
+      console.log(this.datas);
+      for (const a of this.datas) {
+      console.log(a.groupid);
+      }
+    }, 2000);
+
   }
 
   /**
@@ -137,14 +161,17 @@ export class ChatComponent implements OnInit {
    * @param image image of the friend
    */
 
-  changecomponent(id, name, image) {
-    console.log(this.videoobject);
+  changecomponent(id, name, image, groupid) {
+    // console.log(id);
+    // console.log(name);
+    // console.log(image);
+    // console.log(groupid);
     const socket = io('http://localhost:8000');
 
     /**
      * message settinges
      */
-
+    this.grouproomid = groupid;
     this.messagesendid = id;
     this.chatname = name;
     this.img = image;
@@ -204,8 +231,26 @@ export class ChatComponent implements OnInit {
       }
       console.log('already includes');
     } else {
+      if (groupid === undefined) {
       socket.emit('new', { me: this.localdata.uid, to: id });
       socket.on('room is', (data) => {
+        console.log('room is');
+        console.log(data);
+        const obj = {
+          room: data,
+        };
+        this.api.getmessages(obj).subscribe((res: any) => {
+          for (const message of res) {
+            this.newmessagearray.push(message);
+          }
+        });
+      });
+    } else {
+      console.log('group');
+      socket.emit('groupid', { grouproom: groupid});
+      socket.on('room is', (data) => {
+        console.log('room is');
+        console.log(data);
         const obj = {
           room: data,
         };
@@ -216,11 +261,14 @@ export class ChatComponent implements OnInit {
         });
       });
     }
+    }
 
     /**
      * room for the user for chat
      */
     socket.on('room is', (data) => {
+      console.log('room is');
+      console.log(data);
       this.chatroom.push(data);
       this.currentroom = data;
       console.log(this.currentroom);
@@ -259,6 +307,11 @@ export class ChatComponent implements OnInit {
       this.newmessagearray.push(data);
       console.log(this.newmessagearray);
     });
+    socket.on('group message', (data) => {
+      console.log(data);
+      this.newmessagearray.push(data);
+      console.log(this.newmessagearray);
+    });
   }
 
   /**
@@ -274,8 +327,11 @@ export class ChatComponent implements OnInit {
       const m = d.getMinutes();
       const s = d.getSeconds();
       const socket = io('http://localhost:8000');
+      if (this.grouproomid === undefined) {
       socket.emit('new', { me: this.localdata.uid, to: this.messagesendid });
       socket.on('room is', (data) => {
+        console.log('room is');
+        console.log(data);
         socket.emit(data, {
           room: data,
           message: text.value,
@@ -287,6 +343,24 @@ export class ChatComponent implements OnInit {
           type: 'text'
         });
       });
+    } else {
+      // socket.emit('new', { me: this.localdata.uid, to: this.messagesendid });
+      socket.emit('groupid', { grouproom: this.grouproomid});
+      socket.on('room is', (data) => {
+        console.log('room is');
+        console.log(data);
+        socket.emit(data, {
+          room: data,
+          message: text.value,
+          sendbyuid: this.localdata.uid,
+          sendby: this.localdata.displayName,
+          internationaldate: milisecond,
+          date: `${h}:${m}:${s}`,
+          to: this.messagesendid,
+          type: 'text'
+        });
+      });
+    }
     }
     if (this.videoobject.length !== 0 && this.videoobject.length !== null) {
       console.log(this.videoobject);
@@ -496,12 +570,7 @@ export class ChatComponent implements OnInit {
       this.api.groupdetail(this.groupformdata).subscribe(res => {
         console.log('ioioioio');
       });
-      // const newdata = {
-      //   uid: group.uid,
-      //   name: group.groupname,
-      //   image: group.filename
-      // };
-      // this.datas.push(newdata);
+
       this.modalService.dismissAll();
     }
 }

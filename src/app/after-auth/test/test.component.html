@@ -1,24 +1,4 @@
-<!-- <div id="UploadBox">
-    <h2>Video Uploader</h2>
-    <span id='UploadArea'>
-        <form enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
-            <input type="file" formControlName="image"  (change)="createFormData($event)" id="myfile" name="myfile">
-            <button  type="submit" id='UploadButton' class='Button'>Upload</button>
-    </form>
-    
-
-        
-    </span>
-</div> -->
-
-
-
-<!-- 
-<form enctype="multipart/form-data"  [formGroup]="profileForm"  (ngSubmit)="onSubmit($event)">
-        <input type="file" formControlName="image"  (change)="createFormData($event)" id="myfile" name="myfile">
-</form> -->
-
-
-<!-- <input type="file" id="siofu_input" /> -->
-
-<!-- <video src='http://localhost:8000/file/File-1587731233394.mp4' controls></video> -->
+<input type="text" [(ngModel)]='targetpeer'>
+<button (click)='connect()'>Connect</button>
+<button (click)='message()'>Send message</button>
+<video #myvideo></video>

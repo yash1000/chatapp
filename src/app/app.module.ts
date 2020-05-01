@@ -20,6 +20,7 @@ import { RequestComponent } from './after-auth/request/request.component';
 import { FriendsComponent } from './after-auth/friends/friends.component';
 import { HeaderComponent } from './after-auth/header/header.component';
 import { TestComponent } from './after-auth/test/test.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { TestComponent } from './after-auth/test/test.component';
     AppRoutingModule,
     NgbModule,
     HttpClientModule,
+    FormsModule
   ],
   providers: [ApiCalls,
     SocketServiceService,

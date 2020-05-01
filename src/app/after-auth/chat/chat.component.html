@@ -13,7 +13,22 @@
       </div>
     <div *ngIf='!(datas.length === 0); else new'>
       <ul class="list" *ngFor='let data of datas'>
-        <li class="clearfix" (click)="changecomponent(data.uid,data.name,data.image)">
+        <li class="clearfix" *ngIf="data.groupid!=='undefined'" (click)="changecomponent(data.uid,data.name,data.image,data.groupid)">
+          <img class="img1" src='http://localhost:8000/images/{{data.image}}' alt="avatar" />
+          <div class="about">
+            <div class="name">{{data.name}}</div>
+            <div *ngFor='let n of onlineusers'>
+            <div class="status" *ngIf='data.uid===n.user'>
+              <i class="fa fa-circle online inline"></i>Online
+            </div>
+            <!-- <div class="status">
+              <i class="fa fa-circle online inline"  *ngIf='data.uid===n.user' ></i> <div class="inline" *ngIf='data.uid===n.user'>Online</div>
+              <i class="fa fa-circle offline"></i> offline
+            </div> -->
+          </div>
+          </div>
+        </li>
+        <li class="clearfix" *ngIf="data.groupid==='undefined'" (click)="changecomponent(data.uid,data.name,data.image)">
           <img class="img1" src='http://localhost:8000/images/{{data.image}}' alt="avatar" />
           <div class="about">
             <div class="name">{{data.name}}</div>

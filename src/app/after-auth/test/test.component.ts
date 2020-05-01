@@ -1,32 +1,56 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import * as io from 'socket.io-client';
+import { Component, OnInit , ViewChild } from '@angular/core';
+declare var SimplePeer: any;
+
 @Component({
   selector: 'app-test',
   templateUrl: './test.component.html',
   styleUrls: ['./test.component.scss']
 })
 export class TestComponent implements OnInit {
-  profileForm: FormGroup;
-  constructor(private fb: FormBuilder) { }
 
+  @ViewChild('myvideo', {static: true}) myvideo: any;
+
+  constructor() { }
+  targetpeer: any;
+  n =  navigator as any;
+  peer: any;
   ngOnInit() {
+    const video = this.myvideo.nativeElement;
+    let peerx: any;
+    this.n.getUserMedia = (this.n.getUserMedia || this.n.webkitGetUserMedia || this.n.mozGetUserMedia || this.n.msGetUserMedia);
+    this.n.getUserMedia({video: true, audio: true}, (stream) => {
 
-    this.profileForm = this.fb.group({
-      image: ['', Validators.required],
+    peerx = new SimplePeer({
+      initiator: location.hash === '#init',
+      trickle: false,
+      stream,
     });
+    peerx.on('signal', (data) => {
+      console.log(JSON.stringify(data));
+      this.targetpeer = data;
+    });
+    peerx.on('data',  (data) => {
+      console.log('recive message');
+      console.log(data);
+    });
+    peerx.on('stream', (streams) => {
+      video.srcObject = streams;
+      video.play();
+    });
+  }, (err) => {
+    console.log(err);
+  });
 
-    // File-1587731233394.mp4
+    setTimeout(() => {
+    this.peer = peerx;
+    console.log(this.peer);
+  }, 5000);
   }
-  // tslint:disable-next-line:member-ordering
-  selectedFile: File = null;
-  // tslint:disable-next-line:member-ordering
-  fd = new FormData();
-  createFormData(event) {
-  // tslint:disable-next-line:no-angle-bracket-type-assertion
-  this.selectedFile = <File> event.target.files[0];
+  connect() {
+    this.peer.signal(JSON.parse(this.targetpeer));
   }
-  onSubmit(e) {
-    console.log(this.profileForm);
+  message() {
+    this.peer.send('hello');
   }
+
 }

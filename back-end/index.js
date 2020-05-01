@@ -6,10 +6,11 @@ firebase.initializeApp(key);
 const db = admin.firestore();
 const bodyparser = require('body-parser');
 const formidable = require('formidable');
-const app = express();
+const app = express(); 
 const firebas = require('firebase');
 firebas.initializeApp(key);
 const multer = require('multer');
+
 app.use(express.static('public'));
 app.use('/images', express.static(__dirname + '/public/upload'));
 app.use('/file', express.static(__dirname + '/public/messagefile'));
@@ -216,6 +217,7 @@ io.on('connection', function (socket) {
 
   //onkeydown event of input
   socket.on('typing', (data) => {
+    console.log('typing data')
     console.log(data);
     const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === data.to);
     if (getFruit !== -1) {
@@ -242,6 +244,31 @@ io.on('connection', function (socket) {
     }
   })
 
+  socket.on('groupid', (data) => {
+    socket.join(data.grouproom);
+    console.log(data);
+    // const room = makeid(10);
+    socket.emit('room is', data.grouproom);
+    socket.on(data.grouproom, datas => {
+      console.log(datas);
+      // console.log(data.groupname);
+      console.log(datas.room);
+      io.sockets.in(datas.room).emit('group message', datas);
+      db.collection('chat').doc(datas.room).collection('message').add(datas).then(() => {
+        console.log("addes")
+      })
+    })
+  })
+
+//   function makeid(length) {
+//     var result           = '';
+//     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+//     var charactersLength = characters.length;
+//     for ( var i = 0; i < length; i++ ) {
+//        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+//     }
+//     return result;
+//  }
 
   //user join room based on ascii value sum of id
   socket.on('new', (data) => {
@@ -991,7 +1018,15 @@ app.post('/groupdetail',(req,res) => {
       members :req.body.members,
       createdat : Date.now()
     });
-    
+    const arrayforsocket = emp.members;
+    for(const member of arrayforsocket) {
+      const getFruit = arrayforconnected.findIndex(arrayforconnected => arrayforconnected.user === member);
+      if (getFruit !== -1) {
+        var getname = arrayforconnected.find(arrayforconnected => arrayforconnected.user === member);
+        console.log(getname);
+        io.sockets.connected[getname.socketid].emit("group", emp);
+      }
+    }
     console.log(emp)
     const arrayUnion = firebase.firestore.FieldValue.arrayUnion;
       db.collection('group').add(emp).then((doc) => {
@@ -1016,6 +1051,8 @@ app.post('/getgroup', (req,res) => {
   var arrayofgroup = [];
 
   db.collection('users').doc(req.body.id).get().then(data => {
+
+    if(data.data().groups !== undefined){
     console.log(data.data().groups.length);
     console.log(data.data().groups)
     var newcount = data.data().groups.length;
@@ -1042,6 +1079,8 @@ app.post('/getgroup', (req,res) => {
           }
         })
       }
+    }
+    } else {
     }
   }).catch(err => {
     console.log(err)
