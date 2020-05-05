@@ -878,7 +878,7 @@ app.post('/file', (req, res) => {
         if (getFruit !== -1) {
           console.log('user is online so message delivered');
 
-          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+          if (indexofuser !== -1 && userwithroom.roomis === req.body.room) {
             console.log('user is in same room so message read');
             const newobj = {
               room: req.body.room,
@@ -894,7 +894,7 @@ app.post('/file', (req, res) => {
             }
             console.log(newobj);
             io.sockets.in(req.body.room).emit('welcome message', newobj);
-            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
               console.log("addes")
             })
           } else {
@@ -911,7 +911,7 @@ app.post('/file', (req, res) => {
               status: 'delivered'
             }
             io.sockets.in(req.body.room).emit('welcome message', newobj);
-            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
               console.log("addes")
             })
           }
@@ -944,7 +944,7 @@ app.post('/file', (req, res) => {
         if (getFruit !== -1) {
           console.log('user is online so message delivered');
 
-          if (indexofuser !== -1 && userwithroom.roomis === data.room) {
+          if (indexofuser !== -1 && userwithroom.roomis === req.body.room) {
             console.log('user is in same room so message read');
             const newobj = {
               room: req.body.room,
@@ -960,7 +960,7 @@ app.post('/file', (req, res) => {
             }
             console.log(newobj);
             io.sockets.in(req.body.room).emit('welcome message', newobj);
-            db.collection('chat').doc(room).collection('message').add(newobj).then(() => {
+            db.collection('chat').doc(req.body.room).collection('message').add(newobj).then(() => {
               console.log("addes")
             })
           } else {

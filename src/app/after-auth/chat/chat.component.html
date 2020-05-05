@@ -2,7 +2,7 @@
 
 <!-- <div class="container"></div> -->
 
-<app-header></app-header>
+<!-- <app-header></app-header> -->
 
   <div class="container1 clearfix">
     <div class="people-list" id="people-list">
@@ -118,7 +118,7 @@
           <div class="message my-message">
             <!-- <div *ngIf='message.type===file'> -->
               <div *ngIf="message.type==='file' && message.fileis==='image'">
-                <img id="blah" src='http://localhost:8000/file/{{message.message}}'/>
+                <img id='messageimg' src='http://localhost:8000/file/{{message.message}}'/>
               </div>
               <div *ngIf="message.type==='file' && message.fileis==='video'">
                 <video id="messagevdo" src="http://localhost:8000/file/{{message.message}}" controls></video>

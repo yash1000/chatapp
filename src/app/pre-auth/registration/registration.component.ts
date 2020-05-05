@@ -55,7 +55,7 @@ export class RegistrationComponent implements OnInit {
     console.log(this.new);
     this.api.registration(this.fd).subscribe((res: any) => {
       console.log(res.message);
-      if(res.message === 'successfully resgisterd') {
+      if (res.message === 'successfully resgisterd') {
         this.routes.navigate(['/login']);
       } else {
         this.profileForm.reset();
@@ -71,7 +71,6 @@ export class RegistrationComponent implements OnInit {
   // tslint:disable-next-line:member-ordering
   fd = new FormData();
   createFormData(event) {
-  // tslint:disable-next-line:no-angle-bracket-type-assertion
-  this.selectedFile = <File> event.target.files[0];
+  this.selectedFile = event.target.files[0] as File;
   }
 }
